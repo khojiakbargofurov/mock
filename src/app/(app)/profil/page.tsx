@@ -259,6 +259,12 @@ function AccountCard() {
             ? t("accountMeta", { username: user.username })
             : t("accountMetaNoName")}
         </span>
+        <Link
+          href="/maxfiylik"
+          className="text-petrol text-[13.5px] font-semibold"
+        >
+          {t("privacy")}
+        </Link>
       </div>
       <button
         type="button"

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { Analytics } from "@vercel/analytics/next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import "./globals.css";
@@ -52,8 +53,24 @@ const sourceSansExt = localFont({
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("metadata");
   return {
-    title: t("title"),
+    title: {
+      default: t("title"),
+      template: "%s · German Mock Test",
+    },
     description: t("description"),
+    applicationName: "German Mock Test",
+    appleWebApp: {
+      capable: true,
+      title: "Mock Test",
+      statusBarStyle: "default",
+    },
+    formatDetection: { telephone: false },
+    openGraph: {
+      title: t("title"),
+      description: t("description"),
+      type: "website",
+      locale: "uz_UZ",
+    },
   };
 }
 
@@ -80,6 +97,8 @@ export default async function RootLayout({
     >
       <body className="bg-paper text-ink font-sans antialiased">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        {/* Sahifa ko'rishlar statistikasi — shaxsiy ma'lumot yig'ilmaydi */}
+        <Analytics />
       </body>
     </html>
   );

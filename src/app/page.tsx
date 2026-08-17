@@ -241,10 +241,16 @@ export default async function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-line mx-auto w-full max-w-[1100px] border-t px-6 py-8">
+      <footer className="border-line mx-auto flex w-full max-w-[1100px] flex-col gap-4 border-t px-6 py-8">
         <p className="text-muted-2 m-0 max-w-[80ch] text-[13.5px] leading-[1.6]">
           {t("disclaimer")}
         </p>
+        <Link
+          href="/maxfiylik"
+          className="text-petrol text-[13.5px] font-semibold"
+        >
+          {t("privacyLink")}
+        </Link>
       </footer>
     </div>
   );

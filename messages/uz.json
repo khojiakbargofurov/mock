@@ -319,7 +319,8 @@
     "examDateHint": "Bilmasangiz bo‘sh qoldiring — keyin profildan qo‘shasiz.",
     "finish": "Boshlash",
     "guestTitle": "Siz mehmon sifatida ishlayapsiz",
-    "guestBody": "Natijalar faqat shu brauzerda saqlanmoqda. Telegram orqali kirsangiz, ular hisobingizga bog‘lanadi."
+    "guestBody": "Natijalar faqat shu brauzerda saqlanmoqda. Telegram orqali kirsangiz, ular hisobingizga bog‘lanadi.",
+    "privacy": "Maxfiylik siyosati"
   },
   "sync": {
     "offline": "Mahalliy saqlanmoqda · kirish →",
@@ -375,6 +376,31 @@
     "finalBody": "Sanani kiriting — ilova qolgan kunlarni hisoblab, haftalik rejani ko‘rsatadi. Birinchi mock testni bugun topshirib ko‘ring.",
     "finalCta": "Telegram bilan boshlash",
     "finalNote": "Hisob yaratish 10 soniya. Elektron pochta ham, parol ham so‘ralmaydi.",
-    "disclaimer": "Bu mustaqil mashq ilovasi — Goethe-Institut yoki telc bilan hech qanday aloqasi yo‘q va rasmiy imtihon o‘rnini bosmaydi. Rasmiy imtihonlardan faqat ochiq tuzilma (modullar, Teil’lar soni, topshiriq turlari, vaqt va ball taqsimoti) olingan; barcha matn, dialog va topshiriqlar shu ilova uchun yozilgan."
+    "disclaimer": "Bu mustaqil mashq ilovasi — Goethe-Institut yoki telc bilan hech qanday aloqasi yo‘q va rasmiy imtihon o‘rnini bosmaydi. Rasmiy imtihonlardan faqat ochiq tuzilma (modullar, Teil’lar soni, topshiriq turlari, vaqt va ball taqsimoti) olingan; barcha matn, dialog va topshiriqlar shu ilova uchun yozilgan.",
+    "privacyLink": "Maxfiylik siyosati"
+  },
+  "privacy": {
+    "overline": "Hujjat",
+    "title": "Maxfiylik siyosati",
+    "intro": "Bu ilova o‘quv vositasi. Quyida qanday ma’lumot yig‘ilishi, nima uchun kerakligi va uni qanday o‘chirish mumkinligi yozilgan.",
+    "s1Title": "Qanday ma’lumot saqlanadi",
+    "s1Body": "Telegram orqali kirsangiz, botdan quyidagilar keladi va hisobingizga bog‘lanadi:",
+    "s1i1": "Telegram identifikatori, ismingiz va (agar bo‘lsa) username — sizni tanish uchun.",
+    "s1i2": "O‘quv progressingiz: imtihon natijalari, xatolar daftari, lug‘at takrorlash holati va sozlamalar.",
+    "s1i3": "Imtihon sanasi va maqsadli daraja — agar o‘zingiz kiritsangiz.",
+    "s2Title": "Nima saqlanmaydi",
+    "s2Body": "Elektron pochta, telefon raqami va parol so‘ralmaydi — ular bizda umuman yo‘q. Telegram’dagi yozishmalaringizni ham ko‘rmaymiz: bot faqat “Start” bosganingizda yuborilgan xabarni oladi. Sprechen mashqidagi ovoz yozuvlari faqat sizning qurilmangizda qoladi va serverga yuborilmaydi.",
+    "s3Title": "Ma’lumot qayerda turadi",
+    "s3Body": "Ikki joyda:",
+    "s3i1": "Brauzeringizda — hisobsiz ishlaganingizda hamma narsa faqat shu yerda bo‘ladi.",
+    "s3i2": "Serverda (Supabase, Yevropa) — faqat Telegram orqali kirgan bo‘lsangiz, qurilmalar orasida sinxronlash uchun.",
+    "s4Title": "Kim ko‘ra oladi",
+    "s4Body": "Ma’lumotingiz uchinchi shaxslarga sotilmaydi va reklama uchun ishlatilmaydi. Bazaga faqat ilova serveri kira oladi; brauzerdan to‘g‘ridan-to‘g‘ri kirish yopiq.",
+    "s5Title": "O‘chirish",
+    "s5Body": "Hisobingizni va barcha ma’lumotni o‘chirishni istasangiz, botga yozing — o‘chiramiz. Brauzerdagi ma’lumotni esa istalgan vaqtda sayt ma’lumotlarini tozalash orqali o‘zingiz o‘chirishingiz mumkin.",
+    "s6Title": "Rasmiy imtihonlarga aloqasi",
+    "s6Body": "Ilova Goethe-Institut yoki telc bilan bog‘liq emas va rasmiy imtihon o‘rnini bosmaydi. Rasmiy imtihonlardan faqat ochiq tuzilma olingan; barcha matn va topshiriqlar shu ilova uchun yozilgan.",
+    "updated": "Oxirgi yangilanish: 17.08.2026",
+    "back": "Bosh sahifaga"
   }
 }
