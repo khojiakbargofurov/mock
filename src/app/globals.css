@@ -1,26 +1,228 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ============================================================
+   German Mock Test — dizayn tizimi
+   Metafora: "imtihon daftari" — iliq qog'oz, quyuq siyoh, bitta oxra urg'u.
+   Manba: project/German Mock Test.dc.html
+   ============================================================ */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@theme {
+  /* --- Asosiy palitra --- */
+  --color-ink: #14191f; /* Tinte — matn, primary tugma, dark panel */
+  --color-paper: #f6f2eb; /* Papier — ilova foni */
+  --color-canvas: #e7e1d6; /* tashqi fon */
+  --color-surface: #ffffff; /* kartalar, sidebar */
+  --color-sand: #f1eada; /* chip, tanlangan nav, yumshoq karta */
+  --color-sand-deep: #efe8da; /* progress trek, skeleton */
+  --color-petrol: #0f6b78; /* link, ghost tugma */
+  --color-petrol-bg: #eaf2f3;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Accent — dizaynda almashtiriladigan prop (--accent orqali) */
+  --color-accent: var(--accent, #c98a3e);
+
+  /* --- Chegaralar --- */
+  --color-line: #e6dfd1;
+  --color-line-soft: #efe8da;
+  --color-line-strong: #e1d9c9;
+  --color-line-btn: #ded6c6;
+  --color-line-hover: #c7bca8;
+  --color-line-flag: #dcc79c;
+
+  /* --- Matn ranglari --- */
+  --color-slate: #3c4650; /* body matn */
+  --color-muted: #7a6e5d; /* overline, ikkilamchi */
+  --color-muted-2: #8b8172;
+  --color-muted-3: #5b5548;
+  --color-nav-idle: #6e6658;
+  --color-dot-idle: #cfc6b4;
+
+  /* Dark panel ustidagi matn */
+  --color-on-dark: #f6f2eb;
+  --color-on-dark-muted: #9a9285;
+  --color-on-dark-soft: #b6ae9f;
+  --color-on-dark-dim: #7e7768;
+
+  /* --- Semantik holatlar --- */
+  --color-ok-bg: #e8f1e7;
+  --color-ok-fg: #26502a;
+  --color-ok-bd: #a9c7a4;
+  --color-ok-bar: #7fa37a;
+  --color-bad-bg: #f7e7e4;
+  --color-bad-fg: #7a2e24;
+  --color-bad-bd: #d8afa8;
+  --color-low: #c9705a; /* 70% dan past ball */
+  --color-danger: #b4553f;
+  --color-disabled-bg: #e3dcce;
+  --color-disabled-fg: #a69c8c;
+
+  /* --- Daraja kartalari (A1 → B2 tobora quyuqlashadi) --- */
+  --color-lvl-a1: #f1eada;
+  --color-lvl-a1-bd: #e1d8c6;
+  --color-lvl-a2: #efe6d2;
+  --color-lvl-a2-bd: #dfd3bb;
+  --color-lvl-b1: #e9dcc2;
+  --color-lvl-b1-bd: #d8c8a8;
+  --color-lvl-b2: #14191f;
+  --color-lvl-b2-bd: #14191f;
+
+  /* --- Turli --- */
+  --color-avatar: #e9dcc2;
+  --color-seg-idle: #dfd7c7;
+  --color-skeleton: #eae2d3;
+
+  /* --- Shriftlar ---
+     Har oiladan keyin `-ext` varianti turadi: `latin` faylida yo'q belgi
+     (masalan, chex yoki turk harfi) uchraganda brauzer o'sha belgini
+     latin-ext faylidan oladi. */
+  --font-display:
+    var(--font-bricolage), var(--font-bricolage-ext), ui-sans-serif, system-ui,
+    sans-serif;
+  --font-sans:
+    var(--font-source-sans), var(--font-source-sans-ext), ui-sans-serif,
+    system-ui, sans-serif;
+
+  /* --- Radius (dizayndagi aniq qiymatlar) --- */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+  --radius-2xl: 18px;
+  --radius-3xl: 20px;
+  --radius-4xl: 22px;
+  --radius-5xl: 24px;
+  --radius-6xl: 26px;
+  --radius-phone: 36px;
+  --radius-pill: 99px;
+
+  /* --- Soyalar --- */
+  --shadow-frame: 0 26px 70px rgba(20, 25, 31, 0.18);
+  --shadow-panel: 0 20px 50px rgba(20, 25, 31, 0.12);
+  --shadow-card: 0 12px 26px rgba(20, 25, 31, 0.09);
+  --shadow-lift: 0 14px 30px rgba(20, 25, 31, 0.13);
+  --shadow-lift-sm: 0 10px 24px rgba(20, 25, 31, 0.12);
+  --shadow-float: 0 12px 26px rgba(20, 25, 31, 0.14);
+  --shadow-phone: 0 24px 60px rgba(20, 25, 31, 0.16);
+
+  /* --- Animatsiyalar (dizayndagi dcPop / dcShake / dcPulse / dcSpin) --- */
+  --animate-pop: dcPop 0.34s cubic-bezier(0.2, 0.8, 0.3, 1);
+  --animate-shake: dcShake 0.28s ease-in-out;
+  --animate-pulse-soft: dcPulse 1.4s ease-in-out infinite;
+  --animate-spin-slow: dcSpin 0.9s linear infinite;
+  --animate-rise: dcRise 0.28s cubic-bezier(0.2, 0.7, 0.3, 1);
+
+  --ease-out-soft: cubic-bezier(0.2, 0.7, 0.3, 1);
+
+  @keyframes dcPop {
+    0% {
+      transform: scale(1);
+    }
+    40% {
+      transform: scale(1.035);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes dcShake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-5px);
+    }
+    75% {
+      transform: translateX(5px);
+    }
+  }
+  @keyframes dcPulse {
+    0%,
+    100% {
+      opacity: 0.45;
+    }
+    50% {
+      opacity: 0.9;
+    }
+  }
+  @keyframes dcSpin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes dcRise {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Accent prop — dizaynda 4 ta variant bor.
+   Boshqasiga o'tish uchun <html data-accent="petrol"> qo'yish kifoya. */
+:root {
+  --accent: #c98a3e;
+}
+:root[data-accent="petrol"] {
+  --accent: #0f6b78;
+}
+:root[data-accent="lila"] {
+  --accent: #8c6a9b;
+}
+:root[data-accent="terra"] {
+  --accent: #b4553f;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  /* Dizaynda barcha raqamlar tabular */
+  .tnum,
+  [data-numeric] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Klaviatura foydalanuvchilari uchun ko'rinadigan focus — dizaynda accent halqa */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--color-sand);
+    color: var(--color-ink);
+  }
+}
+
+@layer utilities {
+  /* Dizayndagi sarlavha uslubi: Bricolage + siqilgan harf oralig'i */
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Harakatni kamaytirish sozlamasini hurmat qilamiz */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
