@@ -41,7 +41,7 @@ export default function RegisterPage() {
 
   const finish = () => {
     setProfile({ targetLevel: level, examDate: examDate || null });
-    router.push("/");
+    router.push("/uebersicht");
   };
 
   return (

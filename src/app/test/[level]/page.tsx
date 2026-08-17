@@ -102,7 +102,7 @@ export default function TestPage() {
   };
   const stop = () => {
     useApp.getState().abandon();
-    router.push("/");
+    router.push("/uebersicht");
   };
 
   const nextLabel = isLast
@@ -349,7 +349,7 @@ function CenteredNote({
         {body}
       </p>
       <Link
-        href="/"
+        href="/uebersicht"
         className="bg-ink text-paper rounded-lg px-6 py-[15px] text-[15px] font-semibold"
       >
         {home}

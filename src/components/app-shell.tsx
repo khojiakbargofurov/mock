@@ -13,7 +13,7 @@ import { initials } from "@/lib/types";
 
 /** Nav yorliqlari nemischa atamalar — tarjima fayllarida ham shunday qoladi */
 export const NAV = [
-  { key: "uebersicht", href: "/" },
+  { key: "uebersicht", href: "/uebersicht" },
   { key: "pruefung", href: "/pruefung" },
   { key: "mock", href: "/mock" },
   { key: "fehlerbuch", href: "/fehlerbuch" },
@@ -22,7 +22,7 @@ export const NAV = [
 ] as const;
 
 function isActive(pathname: string, href: string) {
-  return href === "/" ? pathname === "/" : pathname.startsWith(href);
+  return pathname.startsWith(href);
 }
 
 /** Logo — dizaynda 30×30 quyuq kvadrat "G" + nom */
@@ -128,9 +128,9 @@ export function Sidebar() {
 
   return (
     <aside className="border-line hidden w-[248px] flex-none flex-col gap-7 border-r bg-white px-[18px] py-7 lg:flex">
-      <div className="px-2">
+      <Link href="/uebersicht" className="px-2">
         <Logo />
-      </div>
+      </Link>
       <NavList pathname={pathname} />
       <ExamCard />
       <SyncStatus />

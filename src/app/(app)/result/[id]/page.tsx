@@ -50,7 +50,7 @@ export default function ResultPage() {
         <p className="text-muted-3 m-0 max-w-[44ch] text-[16.5px] leading-[1.55]">
           {t("notFoundBody")}
         </p>
-        <Button onClick={() => router.push("/")}>{t("home")}</Button>
+        <Button onClick={() => router.push("/uebersicht")}>{t("home")}</Button>
       </main>
     );
   }
@@ -190,7 +190,7 @@ export default function ResultPage() {
           {t("retake")}
         </Button>
         <Link
-          href="/"
+          href="/uebersicht"
           className="text-muted-3 border-line-btn hover:bg-sand rounded-lg border px-6 py-[15px] text-[15px] font-semibold transition-colors"
         >
           {t("home")}

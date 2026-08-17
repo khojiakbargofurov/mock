@@ -36,7 +36,7 @@ export default function FehlerbuchPage() {
         <EmptyState
           title={t("emptyTitle")}
           body={t("emptyBody")}
-          primary={{ label: t("emptyAction"), onClick: () => router.push("/") }}
+          primary={{ label: t("emptyAction"), onClick: () => router.push("/uebersicht") }}
         />
       </main>
     );

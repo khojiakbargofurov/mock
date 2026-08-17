@@ -22,7 +22,7 @@ export default function LoginPage() {
         firstName: account.firstName,
         lastName: account.lastName ?? "",
       });
-      router.push("/");
+      router.push("/uebersicht");
     },
     [router],
   );
@@ -44,7 +44,7 @@ export default function LoginPage() {
 
         <div className="flex flex-wrap gap-3">
           <Link
-            href="/"
+            href="/uebersicht"
             className="bg-ink text-paper rounded-lg px-6 py-[14px] text-[15px] font-semibold transition-opacity hover:opacity-90"
           >
             {t("toApp")}
