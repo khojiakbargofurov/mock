@@ -198,6 +198,8 @@
     "points": "Punkte",
     "start": "Starten",
     "continue": "Fortsetzen",
+    "variantCount": "{count} Varianten",
+    "chooseVariant": "Variante wählen",
     "disclaimer": "Alle Texte, Dialoge und Aufgaben wurden für diese App geschrieben. Aus den offiziellen Prüfungen stammt nur der Aufbau — Anzahl der Teile, Aufgabenformen, Zeiten und Punkteverteilung.",
     "modulesTitle": "Module",
     "moduleDone": "abgelegt",

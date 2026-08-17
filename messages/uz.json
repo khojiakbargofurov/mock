@@ -198,6 +198,8 @@
     "points": "ball",
     "start": "Boshlash",
     "continue": "Davom etish",
+    "variantCount": "{count} ta variant",
+    "chooseVariant": "Variantni tanlang",
     "disclaimer": "Barcha matn, dialog va topshiriqlar shu ilova uchun yozilgan. Rasmiy imtihondan faqat tuzilma — Teil’lar soni, topshiriq turlari, vaqt va ball taqsimoti — olingan.",
     "modulesTitle": "Modullar",
     "moduleDone": "topshirildi",

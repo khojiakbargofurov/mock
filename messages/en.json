@@ -198,6 +198,8 @@
     "points": "points",
     "start": "Start",
     "continue": "Continue",
+    "variantCount": "{count} variants",
+    "chooseVariant": "Choose a variant",
     "disclaimer": "Every text, dialogue and task was written for this app. Only the structure comes from the official exams — number of Teile, task types, timings and point distribution.",
     "modulesTitle": "Modules",
     "moduleDone": "done",
