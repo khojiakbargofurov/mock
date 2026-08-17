@@ -195,21 +195,27 @@ export default function ExamModulePage() {
 
   return (
     <div className="bg-paper flex min-h-screen flex-col">
-      <header className="border-line sticky top-0 z-20 flex flex-wrap items-center justify-between gap-4 border-b bg-white/95 px-6 py-4 backdrop-blur lg:px-10">
-        <div className="flex items-center gap-5">
-          <Logo />
+      <header className="border-line sticky top-0 z-20 flex items-center justify-between gap-3 border-b bg-white/95 px-5 py-3 backdrop-blur sm:gap-4 sm:px-6 sm:py-4 lg:px-10">
+        {/* Telefonda logotip o'rniga javob hisobi ko'rinadi — joy tor */}
+        <div className="flex min-w-0 items-center gap-5">
+          <span className="hidden sm:block">
+            <Logo />
+          </span>
           <span className="text-muted-2 hidden text-[13.5px] lg:block">
             {spec.label}
           </span>
+          <span className="text-muted-2 tnum text-[13px] sm:hidden">
+            {t("answeredShort", { answered, total: items.length })}
+          </span>
         </div>
 
-        <div className="flex items-center gap-5">
-          <span className="text-muted-2 tnum text-[13.5px]">
+        <div className="flex flex-none items-center gap-3 sm:gap-5">
+          <span className="text-muted-2 tnum hidden text-[13.5px] sm:inline">
             {t("answeredOf", { answered, total: items.length })}
           </span>
           <span
             className={cn(
-              "font-display tnum rounded-lg px-4 py-2 text-[19px] font-bold",
+              "font-display tnum rounded-lg px-3 py-[6px] text-[17px] font-bold sm:px-4 sm:py-2 sm:text-[19px]",
               lowTime ? "bg-bad-bg text-bad-fg" : "bg-sand text-ink",
             )}
             aria-live="polite"

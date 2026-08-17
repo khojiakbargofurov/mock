@@ -6,7 +6,7 @@
   "nav": {
     "uebersicht": "Übersicht",
     "pruefung": "Prüfung",
-    "mock": "Mock Tests",
+    "mock": "Übung",
     "fehlerbuch": "Fehlerbuch",
     "wortschatz": "Wortschatz",
     "statistik": "Statistik"
@@ -235,7 +235,8 @@
     "yourAnswer": "Sizning javobingiz",
     "correct": "To‘g‘ri",
     "showScript": "Audio matnini ko‘rish",
-    "retake": "Qayta topshirish"
+    "retake": "Qayta topshirish",
+    "answeredShort": "{answered}/{total}"
   },
   "wortschatz": {
     "overline": "Wortschatz · {count} so‘z",

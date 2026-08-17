@@ -21,6 +21,13 @@ export const NAV = [
   { key: "statistik", href: "/statistik" },
 ] as const;
 
+/**
+ * Telefonda pastki panelga 5 tadan ortiq band sig'maydi — yorliqlar
+ * qisilib, o'qib bo'lmaydigan bo'lib qoladi. Statistik boshqaruv
+ * panelidan, profil esa yuqoridagi sarlavhadan ochiladi.
+ */
+const MOBILE_NAV = NAV.filter((item) => item.key !== "statistik");
+
 function isActive(pathname: string, href: string) {
   return pathname.startsWith(href);
 }
@@ -159,7 +166,7 @@ function MobileNav() {
 
   return (
     <nav className="border-line fixed inset-x-0 bottom-0 z-20 flex border-t bg-white/95 backdrop-blur lg:hidden">
-      {NAV.map((item) => {
+      {MOBILE_NAV.map((item) => {
         const on = isActive(pathname, item.href);
         return (
           <Link
@@ -167,7 +174,7 @@ function MobileNav() {
             href={item.href}
             aria-current={on ? "page" : undefined}
             className={cn(
-              "flex flex-1 flex-col items-center gap-[5px] px-1 pt-3 pb-[max(12px,env(safe-area-inset-bottom))] text-[11px] transition-colors",
+              "flex min-w-0 flex-1 flex-col items-center gap-[5px] px-[2px] pt-3 pb-[max(12px,env(safe-area-inset-bottom))] text-[11px] leading-none transition-colors",
               on ? "text-ink font-semibold" : "text-nav-idle font-medium",
             )}
           >
@@ -178,11 +185,31 @@ function MobileNav() {
                 on ? "bg-accent" : "bg-dot-idle",
               )}
             />
-            {t(item.key)}
+            <span className="w-full truncate text-center">{t(item.key)}</span>
           </Link>
         );
       })}
     </nav>
+  );
+}
+
+/**
+ * Telefondagi yuqori sarlavha — logotip va profil.
+ * Yon panel faqat kattaroq ekranlarda ko'ringani uchun, mobil holatda
+ * profilga kiradigan boshqa yo'l yo'q edi.
+ */
+function MobileHeader() {
+  const profile = useApp((s) => s.profile);
+
+  return (
+    <header className="border-line sticky top-0 z-20 flex items-center justify-between border-b bg-white/95 px-5 py-3 backdrop-blur lg:hidden">
+      <Link href="/uebersicht">
+        <Logo />
+      </Link>
+      <Link href="/profil" aria-label="Profil">
+        <Avatar initials={initials(profile.firstName, profile.lastName)} />
+      </Link>
+    </header>
   );
 }
 
@@ -229,6 +256,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="bg-paper flex min-h-screen">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col pb-[76px] lg:pb-0">
+        <MobileHeader />
         {children}
       </div>
       <MobileNav />
