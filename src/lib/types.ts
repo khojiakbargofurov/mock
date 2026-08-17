@@ -84,7 +84,12 @@ export interface MistakeEntry {
 /* ── Wortschatz (lug'at) ────────────────────────────────────────────────── */
 
 /** So'z turkumi — kartochkada nishon sifatida ko'rsatiladi */
-export type VocabKind = "Nomen" | "Verb" | "Adjektiv" | "Wendung";
+export type VocabKind =
+  | "Nomen"
+  | "Verb"
+  | "Adjektiv"
+  | "Adverb"
+  | "Wendung";
 
 export interface VocabWord {
   id: string;
