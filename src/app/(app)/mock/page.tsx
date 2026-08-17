@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Chip, Overline } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/feedback";
@@ -18,6 +19,7 @@ import { cn } from "@/lib/cn";
 const TEST_LENGTH = 12;
 
 export default function MockPage() {
+  const t = useTranslations("mock");
   const router = useRouter();
   const hydrated = useHydrated();
   const targetLevel = useApp((s) => s.profile.targetLevel);
@@ -47,14 +49,14 @@ export default function MockPage() {
   return (
     <main className="flex flex-1 flex-col gap-7 px-6 py-8 lg:px-10 lg:py-[34px]">
       <div className="flex flex-col gap-[7px]">
-        <Overline className="tracking-[.18em]">Mock Tests</Overline>
+        <Overline className="tracking-[.18em]">{t("overline")}</Overline>
         <h1 className="font-display m-0 text-[28px] font-bold lg:text-[34px]">
-          Sinovni sozlang
+          {t("title")}
         </h1>
       </div>
 
       <section className="flex flex-col gap-3">
-        <Overline>Daraja</Overline>
+        <Overline>{t("level")}</Overline>
         <div className="flex flex-wrap gap-[9px]">
           {LEVELS.map((lv) => {
             const locked = questionCount(lv) === 0;
@@ -82,10 +84,10 @@ export default function MockPage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <Overline>Bo‘lim</Overline>
+        <Overline>{t("section")}</Overline>
         <div className="flex flex-wrap gap-[9px]">
           <Chip active={skill === null} onClick={() => setSkill(null)}>
-            Vollständig
+            {t("full")}
           </Chip>
           {SKILLS.map((sk) => {
             const n = questionCount(level, sk);
@@ -107,25 +109,29 @@ export default function MockPage() {
       <div className="border-line flex flex-wrap items-center justify-between gap-5 rounded-3xl border bg-white px-7 py-6">
         <div className="flex flex-col gap-1">
           <span className="font-display text-[21px] font-bold">
-            {level} · {skill ?? "Vollständig"}
+            {t("summaryTitle", { level, section: skill ?? t("full") })}
           </span>
           <span className="text-muted-3 text-[14.5px]">
             {count > 0
-              ? `${count} savol${
+              ? `${t("questions", { count })} · ${
                   timeLimit
-                    ? ` · ${Math.round((count * SECONDS_PER_QUESTION) / 60)} daqiqa`
-                    : " · vaqt cheklovsiz"
+                    ? t("minutes", {
+                        count: Math.round(
+                          (count * SECONDS_PER_QUESTION) / 60,
+                        ),
+                      })
+                    : t("noLimit")
                 }`
-              : "Bu tanlov uchun savol hali yo‘q"}
+              : t("empty")}
           </span>
         </div>
         <Button size="lg" disabled={count === 0} onClick={start}>
-          Sinovni boshlash
+          {t("start")}
         </Button>
       </div>
 
       <section className="flex flex-col gap-3">
-        <Overline>Darajalar holati</Overline>
+        <Overline>{t("levelsStatus")}</Overline>
         <div className="hidden grid-cols-2 gap-[14px] lg:grid">
           {statuses.map((s) => (
             <LevelCardTall key={s.level} status={s} />

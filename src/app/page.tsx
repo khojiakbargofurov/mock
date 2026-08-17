@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/app-shell";
+import { LocaleSwitch } from "@/components/locale-switch";
 import { readSessionToken, SESSION_COOKIE } from "@/lib/auth/session";
 import { EXAM_SETS } from "@/lib/exam/registry";
 import { formatSpec } from "@/lib/exam/spec";
@@ -30,7 +31,8 @@ export default async function LandingPage() {
     <div className="bg-paper flex min-h-screen flex-col">
       <header className="mx-auto flex w-full max-w-[1100px] flex-wrap items-center justify-between gap-3 px-6 py-6">
         <Logo />
-        <nav className="flex items-center gap-4 sm:gap-5">
+        <nav className="flex items-center gap-3 sm:gap-5">
+          <LocaleSwitch compact />
           <Link
             href="/login"
             className="text-muted-3 hover:text-ink text-[15px] font-semibold transition-colors"

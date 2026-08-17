@@ -10,16 +10,12 @@ import { averageScore, useApp, useHydrated } from "@/lib/store";
 import { formatDay } from "@/lib/format";
 import { daysUntil, useNow } from "@/lib/now";
 import { initials, LEVELS, PASS_SCORE, type Level } from "@/lib/types";
+import { LocaleSwitch } from "@/components/locale-switch";
 import { useSession } from "@/lib/auth/use-session";
 import { cn } from "@/lib/cn";
 
-const UI_LANGS = [
-  { code: "uz", label: "O‘zbek" },
-  { code: "de", label: "Deutsch" },
-  { code: "en", label: "English" },
-] as const;
-
 export default function ProfilPage() {
+  const t = useTranslations("profil");
   const hydrated = useHydrated();
   const profile = useApp((s) => s.profile);
   const attempts = useApp((s) => s.attempts);
@@ -50,7 +46,7 @@ export default function ProfilPage() {
             {profile.firstName} {profile.lastName}
           </h1>
           <span className="text-muted text-[15px]">
-            {profile.targetLevel} · Streak {profile.streak} Tage
+            {t("meta", { level: profile.targetLevel, streak: profile.streak })}
           </span>
         </div>
       </div>
@@ -59,31 +55,31 @@ export default function ProfilPage() {
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <Card className="flex flex-col gap-5 px-[30px] py-7">
-          <Overline>Sinov sozlamalari</Overline>
+          <Overline>{t("settings")}</Overline>
 
           <SettingRow
-            title="Vaqt cheklovi"
-            description="Har savol uchun taymer ko‘rsatiladi"
+            title={t("timeLimit")}
+            description={t("timeLimitDesc")}
             checked={profile.settings.timeLimit}
             onChange={(v) => setSetting("timeLimit", v)}
           />
           <SettingRow
             divider
-            title="Darhol javobni ko‘rsatish"
-            description="Sinov oxirida emas, har savoldan keyin"
+            title={t("instant")}
+            description={t("instantDesc")}
             checked={profile.settings.instantFeedback}
             onChange={(v) => setSetting("instantFeedback", v)}
           />
           <SettingRow
             divider
-            title="Kunlik eslatma"
-            description="19:00 · haftaning ish kunlari"
+            title={t("reminder")}
+            description={t("reminderDesc")}
             checked={profile.settings.dailyReminder}
             onChange={(v) => setSetting("dailyReminder", v)}
           />
 
           <div className="border-line-soft flex flex-col gap-[10px] border-t pt-[18px]">
-            <span className="text-[16px] font-semibold">Maqsadli daraja</span>
+            <span className="text-[16px] font-semibold">{t("targetLevel")}</span>
             <div className="flex flex-wrap gap-[9px]">
               {LEVELS.map((lv) => (
                 <button
@@ -104,7 +100,7 @@ export default function ProfilPage() {
           </div>
 
           <div className="border-line-soft flex flex-col gap-[10px] border-t pt-[18px]">
-            <span className="text-[16px] font-semibold">Prüfungstermin</span>
+            <span className="text-[16px] font-semibold">{t("examDate")}</span>
             <input
               type="date"
               value={profile.examDate ?? ""}
@@ -112,41 +108,15 @@ export default function ProfilPage() {
               className="border-line-strong focus:border-accent w-fit rounded-lg border-[1.5px] bg-white px-[18px] py-[13px] text-[16px] outline-none transition-colors"
             />
             <span className="text-muted-2 text-[14px]">
-              {days === null
-                ? "Sanani belgilasangiz, yon panelda qolgan kunlar ko‘rinadi."
-                : `Imtihongacha ${days} kun qoldi.`}
+              {days === null ? t("examHint") : t("examDays", { days })}
             </span>
           </div>
 
           <div className="border-line-soft flex flex-col gap-[10px] border-t pt-[18px]">
-            <span className="text-[16px] font-semibold">Interfeys tili</span>
-            <div className="flex flex-wrap gap-[9px]">
-              {UI_LANGS.map((lang) => {
-                const on = profile.settings.uiLang === lang.code;
-                const ready = lang.code === "uz";
-                return (
-                  <button
-                    key={lang.code}
-                    type="button"
-                    disabled={!ready}
-                    onClick={() => setSetting("uiLang", lang.code)}
-                    className={cn(
-                      "rounded-md border-[1.5px] px-[18px] py-[11px] text-[15px] font-semibold transition-colors duration-[180ms]",
-                      on
-                        ? "bg-ink border-ink text-paper"
-                        : "border-line-strong text-muted-3 bg-white",
-                      ready
-                        ? !on && "hover:bg-sand cursor-pointer"
-                        : "cursor-not-allowed opacity-50",
-                    )}
-                  >
-                    {lang.label}
-                  </button>
-                );
-              })}
-            </div>
+            <span className="text-[16px] font-semibold">{t("uiLang")}</span>
+            <LocaleSwitch />
             <span className="text-muted-2 text-[14px]">
-              Deutsch va English tarjimalari keyingi bosqichda qo‘shiladi.
+              {t("uiLangHint")}
             </span>
           </div>
         </Card>
@@ -154,7 +124,7 @@ export default function ProfilPage() {
         <div className="flex flex-col gap-4">
           <Card tone="ink" className="flex flex-col gap-[10px] p-[26px]">
             <Overline className="text-on-dark-muted tracking-[.14em]">
-              Tayyorlik darajasi
+              {t("readiness")}
             </Overline>
             <span className="font-display tnum text-[40px] leading-none font-extrabold">
               {readiness}%
@@ -167,16 +137,19 @@ export default function ProfilPage() {
             </div>
             <span className="text-on-dark-muted text-[14px] leading-[1.5]">
               {days === null
-                ? `O‘tish balli ${PASS_SCORE}%. Haftada 3 mock test tavsiya etiladi.`
-                : `${profile.targetLevel} imtihoniga ${days} kun qoldi. Haftada 3 mock test rejasi.`}
+                ? t("readinessHint", { pass: PASS_SCORE })
+                : t("readinessHintExam", {
+                    level: profile.targetLevel,
+                    days,
+                  })}
             </span>
           </Card>
 
           <Card className="flex flex-1 flex-col gap-[14px] p-6">
-            <Overline>Oxirgi natijalar</Overline>
+            <Overline>{t("lastResults")}</Overline>
             {attempts.length === 0 ? (
               <span className="text-muted-2 text-[13.5px]">
-                Hali sinov topshirmadingiz.
+                {t("noAttempts")}
               </span>
             ) : (
               attempts.slice(0, 4).map((a) => (

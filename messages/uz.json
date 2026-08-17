@@ -169,7 +169,7 @@
     "noSkills": "Bo‘limlar bo‘yicha foizlar Übung sinovlaridan yig‘iladi."
   },
   "profil": {
-    "meta": "{email} · {level} · Streak {streak} Tage",
+    "meta": "{level} · Streak {streak} Tage",
     "settings": "Sinov sozlamalari",
     "timeLimit": "Vaqt cheklovi",
     "timeLimitDesc": "Har savol uchun taymer ko‘rsatiladi",
@@ -320,7 +320,8 @@
     "finish": "Boshlash",
     "guestTitle": "Siz mehmon sifatida ishlayapsiz",
     "guestBody": "Natijalar faqat shu brauzerda saqlanmoqda. Telegram orqali kirsangiz, ular hisobingizga bog‘lanadi.",
-    "privacy": "Maxfiylik siyosati"
+    "privacy": "Maxfiylik siyosati",
+    "backToApp": "Ilovaga qaytish →"
   },
   "sync": {
     "offline": "Mahalliy saqlanmoqda · kirish →",

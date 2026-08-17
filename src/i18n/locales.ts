@@ -1,15 +1,14 @@
 /**
  * Interfeys tillari.
  *
- * Dizayn profil ekranida uchta tilni ko'rsatadi, lekin hozircha faqat
- * o'zbekcha tarjima tayyor — `AVAILABLE_LOCALES` shuni belgilaydi.
- * `messages/de.json` yoki `messages/en.json` qo'shilgach, shu ro'yxatga
- * kodini qo'shish kifoya, boshqa hech nima o'zgarmaydi.
+ * Uchala til uchun ham tarjima tayyor (`messages/*.json`).
+ * Diqqat: imtihon topshiriqlari va yo'riqnomalari har qanday tilda
+ * nemischa qoladi — rasmiy imtihonda ham shunday.
  */
 export const LOCALES = ["uz", "de", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
 
-export const AVAILABLE_LOCALES: Locale[] = ["uz"];
+export const AVAILABLE_LOCALES: Locale[] = ["uz", "de", "en"];
 export const DEFAULT_LOCALE: Locale = "uz";
 
 /** Tilni saqlaydigan cookie — server render shu asosda xabarlarni yuklaydi */
