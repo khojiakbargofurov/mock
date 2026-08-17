@@ -165,7 +165,13 @@ function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="border-line fixed inset-x-0 bottom-0 z-20 flex border-t bg-white/95 backdrop-blur lg:hidden">
+    <nav
+      className={cn(
+        "border-line fixed inset-x-0 bottom-0 z-20 flex gap-1 border-t bg-white/95 px-2 pt-2 backdrop-blur lg:hidden",
+        // iPhone'dagi pastki chiziq uchun joy
+        "pb-[max(8px,env(safe-area-inset-bottom))]",
+      )}
+    >
       {MOBILE_NAV.map((item) => {
         const on = isActive(pathname, item.href);
         return (
@@ -174,15 +180,18 @@ function MobileNav() {
             href={item.href}
             aria-current={on ? "page" : undefined}
             className={cn(
-              "flex min-w-0 flex-1 flex-col items-center gap-[5px] px-[2px] pt-3 pb-[max(12px,env(safe-area-inset-bottom))] text-[11px] leading-none transition-colors",
-              on ? "text-ink font-semibold" : "text-nav-idle font-medium",
+              "flex min-w-0 flex-1 flex-col items-center justify-center gap-[6px] rounded-2xl px-1 py-[10px] text-[11.5px] leading-none transition-colors duration-150",
+              // Faol band — yon paneldagi kabi qumli fon bilan ajraladi
+              on
+                ? "bg-sand text-ink font-bold"
+                : "text-nav-idle font-medium active:bg-paper",
             )}
           >
             <span
               aria-hidden
               className={cn(
-                "h-[6px] w-[6px] rounded-full",
-                on ? "bg-accent" : "bg-dot-idle",
+                "rounded-full transition-all duration-150",
+                on ? "bg-accent h-[7px] w-[7px]" : "bg-dot-idle h-[6px] w-[6px]",
               )}
             />
             <span className="w-full truncate text-center">{t(item.key)}</span>
