@@ -56,7 +56,7 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL("https://prufung.uz"),
     title: {
       default: t("title"),
-      template: "%s · German Mock Test",
+      template: "%s · prufung.uz",
     },
     description: t("description"),
     applicationName: "German Mock Test",
