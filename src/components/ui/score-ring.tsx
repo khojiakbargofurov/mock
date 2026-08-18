@@ -27,11 +27,11 @@ export function ScoreRing({
         height: size,
         background: `conic-gradient(var(--color-accent) 0turn ${turn}turn, rgba(246,242,235,.14) ${turn}turn 1turn)`,
       }}
-      className={cn("flex items-center justify-center rounded-full", className)}
+      className={cn("flex flex-none items-center justify-center rounded-full", className)}
     >
       <div
         style={{ width: inner, height: inner }}
-        className="bg-ink flex flex-col items-center justify-center gap-[2px] rounded-full"
+        className="bg-ink flex flex-none flex-col items-center justify-center gap-[2px] rounded-full"
       >
         <span
           className="font-display tnum text-on-dark leading-none font-extrabold"

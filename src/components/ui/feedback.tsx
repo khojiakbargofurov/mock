@@ -22,13 +22,18 @@ export function Skeleton({
   );
 }
 
-/** Yuklanish spinneri — accent rangli yuqori chegara aylanadi */
+/**
+ * Yuklanish spinneri — accent rangli yuqori chegara aylanadi.
+ *
+ * `flex-none` shart: flex konteyner ichida yonidagi matn joy talab qilsa,
+ * spinner siqilib doiradan ovalga aylanib qoladi.
+ */
 export function Spinner({ className }: { className?: string }) {
   return (
     <span
       aria-hidden
       className={cn(
-        "border-line-btn border-t-accent animate-spin-slow inline-block h-5 w-5 rounded-full border-[2.5px]",
+        "border-line-btn border-t-accent animate-spin-slow inline-block h-5 w-5 flex-none rounded-full border-[2.5px]",
         className,
       )}
     />
