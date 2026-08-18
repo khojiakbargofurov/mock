@@ -1,217 +1,221 @@
 import { redirect } from "next/navigation";
 import { currentAdmin } from "@/lib/auth";
 import { Shell } from "@/components/shell";
-import { BarChart, Card, Kpi, Pill, SectionTitle, Table, Td } from "@/components/ui";
 import {
-  activitySeries,
-  formatStats,
-  kpis,
-  moduleStats,
+  BarRow,
+  Card,
+  CardHead,
+  Empty,
+  MonthChart,
+  Pill,
+  Stat,
+  Table,
+  Td,
+} from "@/components/ui";
+import {
+  hardestTopics,
+  headline,
+  monthlySeries,
   recentUsers,
-  retention,
-  signupSeries,
+  resolveItems,
+  topMistakes,
 } from "@/lib/stats";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const FORMAT_LABEL: Record<string, string> = {
-  "goethe-a1": "Goethe A1",
-  "goethe-a2": "Goethe A2",
-  "telc-b1": "telc B1",
-  "telc-b2": "telc B2",
-};
-
-const MODULE_LABEL: Record<string, string> = {
-  hoeren: "Hören",
-  lesen: "Lesen",
-  schreiben: "Schreiben",
-  sprechen: "Sprechen",
-  sprachbausteine: "Sprachbausteine",
-};
-
 function when(iso: string): string {
-  const diff = Date.now() - Date.parse(iso);
-  const min = Math.floor(diff / 60_000);
+  const min = Math.floor((Date.now() - Date.parse(iso)) / 60_000);
   if (min < 1) return "hozir";
-  if (min < 60) return `${min} daq oldin`;
+  if (min < 60) return `${min} daq`;
   const h = Math.floor(min / 60);
-  if (h < 24) return `${h} soat oldin`;
-  const d = Math.floor(h / 24);
-  return `${d} kun oldin`;
+  if (h < 24) return `${h} soat`;
+  return `${Math.floor(h / 24)} kun`;
 }
 
 export default async function DashboardPage() {
   const admin = await currentAdmin();
   if (!admin) redirect("/login");
 
-  const [k, signups, activity, formats, modules, users, ret] =
-    await Promise.all([
-      kpis(),
-      signupSeries(30),
-      activitySeries(30),
-      formatStats(),
-      moduleStats(),
-      recentUsers(8),
-      retention(),
-    ]);
+  const [h, months, topics, mistakes, users] = await Promise.all([
+    headline(),
+    monthlySeries(),
+    hardestTopics(5),
+    topMistakes(4),
+    recentUsers(5),
+  ]);
 
-  const retPercent = ret.total
-    ? Math.round((ret.returned / ret.total) * 100)
-    : 0;
+  const texts = await resolveItems(mistakes.map((m) => m.itemId));
+  const totalYear = months.reduce((n, m) => n + m.count, 0);
+  const avgDelta =
+    h.avgPercentPrev === 0 ? null : h.avgPercent - h.avgPercentPrev;
 
   return (
     <Shell
       admin={admin}
       current="/"
-      title="Umumiy ko‘rinish"
-      hint="Barcha raqamlar bazadan jonli olinadi — sahifa har ochilganda qayta hisoblanadi."
+      eyebrow="Verwaltung"
+      title="Dashboard"
+      actions={
+        <>
+          <span className="border-line bg-sand text-muted-3 rounded-lg border px-4 py-[9px] text-[13.5px] font-semibold">
+            Oxirgi 7 kun
+          </span>
+          <a
+            href="https://prufung.uz"
+            target="_blank"
+            rel="noreferrer"
+            className="bg-ink text-paper rounded-lg px-4 py-[9px] text-[13.5px] font-semibold"
+          >
+            Saytni ochish
+          </a>
+        </>
+      }
     >
-      {/* ── Asosiy raqamlar ── */}
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Kpi
+      {/* ── To'rtta asosiy raqam ── */}
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Stat
           label="Foydalanuvchilar"
-          value={k.users}
-          sub={`bugun +${k.usersToday} · 7 kunda +${k.users7}`}
+          value={h.users}
+          delta={h.usersDelta.percent}
+          deltaLabel={
+            h.usersDelta.percent == null
+              ? `7 kunda +${h.usersDelta.value}`
+              : "haftada"
+          }
         />
-        <Kpi
+        <Stat
           label="Faol (7 kun)"
-          value={k.active7}
-          sub={`bugun ${k.active1} · 30 kunda ${k.active30}`}
-          tone={k.active7 > 0 ? "ok" : "plain"}
+          value={h.activeWeek}
+          delta={null}
+          deltaLabel={
+            h.users ? `jamining ${Math.round((h.activeWeek / h.users) * 100)}%` : "—"
+          }
         />
-        <Kpi
-          label="Imtihon modullari"
-          value={k.examAttempts}
-          sub={`7 kunda ${k.examAttempts7}`}
+        <Stat
+          label="Haftalik modullar"
+          value={h.examsWeek.value}
+          delta={h.examsWeek.percent}
+          deltaLabel={
+            h.examsWeek.percent == null
+              ? `o‘tgan hafta ${h.examsWeek.previous}`
+              : "haftada"
+          }
         />
-        <Kpi
-          label="Mashq urinishlari"
-          value={k.uebungAttempts}
-          sub={`7 kunda ${k.uebungAttempts7}`}
+        <Stat
+          label="O‘rtacha ball"
+          value={h.avgPercent ? `${h.avgPercent}%` : "—"}
+          delta={avgDelta}
+          deltaLabel={avgDelta == null ? "taqqoslash uchun ma’lumot kam" : "haftada"}
         />
-      </section>
+      </div>
 
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Kpi
-          label="Qaytib kelganlar"
-          value={`${retPercent}%`}
-          sub={`${ret.returned} / ${ret.total} foydalanuvchi`}
-          tone={retPercent >= 40 ? "ok" : retPercent >= 20 ? "warn" : "plain"}
-        />
-        <Kpi
-          label="Ochiq xatolar"
-          value={k.openMistakes}
-          sub="Fehlerbuch’da tuzatilmagan"
-        />
-        <Kpi
-          label="O‘zlashtirilgan so‘z"
-          value={k.vocabLearned}
-          sub="Leitner 4-qutidan yuqori"
-        />
-        <Kpi
-          label="30 kunda yangi"
-          value={k.users30}
-          sub={k.users ? `jamining ${Math.round((k.users30 / k.users) * 100)}%` : "—"}
-        />
-      </section>
-
-      {/* ── Dinamika ── */}
-      <section className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <SectionTitle hint="oxirgi 30 kun">Ro‘yxatdan o‘tish</SectionTitle>
-          <BarChart data={signups} />
+      {/* ── Grafik + eng qiyin mavzular ── */}
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
+        <Card className="flex flex-col">
+          <CardHead
+            title="Oyiga topshirilgan modullar"
+            hint={`${new Date().getFullYear()} · jami ${totalYear}`}
+          />
+          <MonthChart data={months} />
         </Card>
-        <Card>
-          <SectionTitle hint="imtihon + mashq">Faollik</SectionTitle>
-          <BarChart data={activity} />
-        </Card>
-      </section>
 
-      {/* ── Format va modul kesimi ── */}
-      <section className="grid gap-4 lg:grid-cols-2">
         <Card>
-          <SectionTitle hint="topshirilgan modullar bo‘yicha">
-            Formatlar
-          </SectionTitle>
-          {formats.length === 0 ? (
-            <p className="text-muted-2 m-0 text-[14px]">Hali ma’lumot yo‘q.</p>
+          <CardHead title="Eng qiyin mavzular" />
+          {topics.length === 0 ? (
+            <Empty
+              title="Hali ma’lumot yo‘q"
+              body="Foydalanuvchilar xato qila boshlagach, shu yerda qaysi mavzular qiyinligi ko‘rinadi."
+            />
           ) : (
-            <Table head={["Format", "Modul", "Kishi", "O‘rtacha", "O‘tish"]}>
-              {formats.map((f) => (
-                <tr key={f.format}>
-                  <Td className="font-semibold">
-                    {FORMAT_LABEL[f.format] ?? f.format}
-                  </Td>
-                  <Td className="tnum">{f.attempts}</Td>
-                  <Td className="tnum">{f.users}</Td>
-                  <Td className="tnum">{f.avgPercent}%</Td>
-                  <Td>
-                    <Pill
-                      tone={
-                        f.passRate >= 60 ? "ok" : f.passRate >= 30 ? "warn" : "bad"
-                      }
-                    >
-                      {f.passRate}%
-                    </Pill>
-                  </Td>
-                </tr>
-              ))}
-            </Table>
+            <>
+              <div className="flex flex-col">
+                {topics.map((t) => (
+                  <BarRow
+                    key={t.topic}
+                    label={t.topic}
+                    value={`${t.errorShare}% xato`}
+                    percent={t.errorShare}
+                    tone={t.errorShare >= 50 ? "bad" : "accent"}
+                  />
+                ))}
+              </div>
+              <p className="text-muted-2 mt-3 mb-0 text-[12.5px] leading-[1.55]">
+                Xato ulushi 50% dan yuqori mavzular qayta ko‘rib chiqishga
+                tavsiya etiladi.
+              </p>
+            </>
           )}
         </Card>
+      </div>
 
-        <Card>
-          <SectionTitle hint="o‘rtacha foiz bo‘yicha, qiyini yuqorida">
-            Modullar
-          </SectionTitle>
-          {modules.length === 0 ? (
-            <p className="text-muted-2 m-0 text-[14px]">Hali ma’lumot yo‘q.</p>
-          ) : (
-            <Table head={["Modul", "Topshirilgan", "O‘rtacha"]}>
-              {modules.map((m) => (
-                <tr key={m.moduleId}>
-                  <Td className="font-semibold">
-                    {MODULE_LABEL[m.moduleId] ?? m.moduleId}
-                  </Td>
-                  <Td className="tnum">{m.attempts}</Td>
-                  <Td>
-                    <Pill
-                      tone={
-                        m.avgPercent >= 60
-                          ? "ok"
-                          : m.avgPercent >= 40
-                            ? "warn"
-                            : "bad"
-                      }
-                    >
-                      {m.avgPercent}%
-                    </Pill>
-                  </Td>
-                </tr>
-              ))}
-            </Table>
-          )}
-        </Card>
-      </section>
+      {/* ── Diqqat talab qiladigan savollar ── */}
+      <Card>
+        <CardHead
+          title={`Diqqat talab qiladigan savollar · ${mistakes.length}`}
+          action={
+            <a
+              href="/savol-sifati"
+              className="text-petrol text-[13px] font-semibold"
+            >
+              Barchasini ko‘rish
+            </a>
+          }
+        />
+        {mistakes.length === 0 ? (
+          <Empty
+            title="Hammasi joyida"
+            body="Hozircha muammoli savol yo‘q. Foydalanuvchilar imtihon topshira boshlagach, eng ko‘p xato qilingan savollar shu yerga chiqadi."
+          />
+        ) : (
+          <Table head={["Savol", "Manba", "Kishi", "Xato"]}>
+            {mistakes.map((m) => (
+              <tr key={m.itemId}>
+                <Td className="max-w-[560px]">
+                  {texts.get(m.itemId)?.prompt ?? m.itemId}
+                </Td>
+                <Td>
+                  <Pill tone={m.source === "pruefung" ? "info" : "plain"}>
+                    {m.source === "pruefung" ? "Imtihon" : "Mashq"}
+                  </Pill>
+                </Td>
+                <Td className="tnum font-semibold">{m.users}</Td>
+                <Td className="tnum">{m.total}</Td>
+              </tr>
+            ))}
+          </Table>
+        )}
+      </Card>
 
       {/* ── So'nggi foydalanuvchilar ── */}
       <Card>
-        <SectionTitle hint="oxirgi 8 ta">Yangi foydalanuvchilar</SectionTitle>
+        <CardHead
+          title="Yangi foydalanuvchilar"
+          action={
+            <a
+              href="/foydalanuvchilar"
+              className="text-petrol text-[13px] font-semibold"
+            >
+              Barchasi
+            </a>
+          }
+        />
         {users.length === 0 ? (
-          <p className="text-muted-2 m-0 text-[14px]">Hali foydalanuvchi yo‘q.</p>
+          <Empty
+            title="Hali foydalanuvchi yo‘q"
+            body="Birinchi foydalanuvchi Telegram orqali kirgach, shu yerda paydo bo‘ladi."
+          />
         ) : (
-          <Table head={["Ism", "Telegram", "Ro‘yxatdan", "Oxirgi faollik", "Imtihon", "Mashq"]}>
+          <Table head={["Ism", "Telegram", "Ro‘yxatdan", "Oxirgi faollik", "Imtihon"]}>
             {users.map((u) => (
               <tr key={u.id}>
                 <Td className="font-semibold">{u.name}</Td>
                 <Td className="text-muted-3">
                   {u.username ? `@${u.username}` : u.telegramId}
                 </Td>
-                <Td className="text-muted-3">{when(u.createdAt)}</Td>
-                <Td className="text-muted-3">{when(u.lastSeenAt)}</Td>
+                <Td className="text-muted-3">{when(u.createdAt)} oldin</Td>
+                <Td className="text-muted-3">{when(u.lastSeenAt)} oldin</Td>
                 <Td className="tnum">{u.exams}</Td>
-                <Td className="tnum">{u.uebung}</Td>
               </tr>
             ))}
           </Table>

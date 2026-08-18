@@ -399,3 +399,323 @@ export async function tableSizes(): Promise<{ table: string; rows: number }[]> {
   );
   return rows;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   Dizayn bo'yicha qo'shimcha ko'rsatkichlar
+   ══════════════════════════════════════════════════════════════ */
+
+/** Haftalik o'zgarish: shu hafta va o'tgan hafta orasidagi farq (%) */
+export interface Delta {
+  value: number;
+  previous: number;
+  percent: number | null;
+}
+
+async function weekDelta(
+  table: string,
+  column: string,
+): Promise<Delta> {
+  const [now, prev] = await Promise.all([
+    db()
+      .from(table)
+      .select("*", { count: "exact", head: true })
+      .gte(column, iso(7)),
+    db()
+      .from(table)
+      .select("*", { count: "exact", head: true })
+      .gte(column, iso(14))
+      .lt(column, iso(7)),
+  ]);
+  const value = now.count ?? 0;
+  const previous = prev.count ?? 0;
+  return {
+    value,
+    previous,
+    percent: previous === 0 ? null : Math.round(((value - previous) / previous) * 100),
+  };
+}
+
+export interface HeadlineStats {
+  users: number;
+  usersDelta: Delta;
+  activeWeek: number;
+  examsWeek: Delta;
+  avgPercent: number;
+  avgPercentPrev: number;
+  dropout: number;
+}
+
+/** Dashboard tepasidagi to'rtta karta */
+export async function headline(): Promise<HeadlineStats> {
+  const [{ count: users }, usersDelta, examsWeek, active] = await Promise.all([
+    db().from("users").select("*", { count: "exact", head: true }),
+    weekDelta("users", "created_at"),
+    weekDelta("exam_attempts", "finished_at"),
+    db()
+      .from("users")
+      .select("*", { count: "exact", head: true })
+      .gte("last_seen_at", iso(7)),
+  ]);
+
+  // O'rtacha ball: shu hafta va o'tgan hafta
+  const [thisWeek, lastWeek] = await Promise.all([
+    db().from("exam_attempts").select("percent").gte("finished_at", iso(7)).limit(5000),
+    db()
+      .from("exam_attempts")
+      .select("percent")
+      .gte("finished_at", iso(14))
+      .lt("finished_at", iso(7))
+      .limit(5000),
+  ]);
+  const avg = (rows: { percent: unknown }[] | null) =>
+    rows && rows.length
+      ? Math.round(rows.reduce((n, r) => n + Number(r.percent), 0) / rows.length)
+      : 0;
+
+  // Tashlab ketish: boshlangan, lekin bironta modul tugallanmagan imtihonlar
+  const { data: runs } = await db()
+    .from("exam_runs")
+    .select("done_modules")
+    .limit(20_000);
+  const started = (runs ?? []).length;
+  const abandoned = (runs ?? []).filter(
+    (r) => (r.done_modules as string[] | null)?.length === 0,
+  ).length;
+
+  return {
+    users: users ?? 0,
+    usersDelta,
+    activeWeek: active.count ?? 0,
+    examsWeek,
+    avgPercent: avg(thisWeek.data),
+    avgPercentPrev: avg(lastWeek.data),
+    dropout: started ? Math.round((abandoned / started) * 100) : 0,
+  };
+}
+
+export interface MonthPoint {
+  label: string;
+  count: number;
+  current: boolean;
+}
+
+/** 12 oylik ustunlar — dizayndagi asosiy grafik */
+export async function monthlySeries(): Promise<MonthPoint[]> {
+  const LABELS = [
+    "Jan", "Feb", "Mär", "Apr", "Mai", "Jun",
+    "Jul", "Aug", "Sep", "Okt", "Nov", "Dez",
+  ];
+  const year = new Date().getFullYear();
+  const thisMonth = new Date().getMonth();
+
+  const { data } = await db()
+    .from("exam_attempts")
+    .select("finished_at")
+    .gte("finished_at", new Date(year, 0, 1).toISOString())
+    .limit(50_000);
+
+  const counts = new Array(12).fill(0) as number[];
+  for (const row of data ?? []) {
+    const m = new Date(String(row.finished_at)).getMonth();
+    counts[m] += 1;
+  }
+
+  return LABELS.map((label, i) => ({
+    label,
+    count: counts[i],
+    current: i === thisMonth,
+  }));
+}
+
+export interface TopicRow {
+  topic: string;
+  errorShare: number;
+  mistakes: number;
+}
+
+/**
+ * Eng qiyin mavzular. Xatolar item_id bo'yicha saqlanadi, mavzu esa
+ * kontentda — shuning uchun asosiy ilovadan matnlarni olib, mavzu
+ * (Übung) yoki modul (imtihon) bo'yicha guruhlaymiz.
+ */
+const MODULE_LABEL: Record<string, string> = {
+  hoeren: "Hörverstehen",
+  lesen: "Leseverstehen",
+  schreiben: "Schreiben",
+  sprechen: "Sprechen",
+  sprachbausteine: "Sprachbausteine",
+};
+
+export async function hardestTopics(limit = 5): Promise<TopicRow[]> {
+  const { data } = await db()
+    .from("mistakes")
+    .select("item_id, wrong_count")
+    .limit(20_000);
+
+  const rows = data ?? [];
+  if (rows.length === 0) return [];
+
+  const ids = [...new Set(rows.map((r) => String(r.item_id)))].slice(0, 200);
+  const meta = await resolveItems(ids);
+
+  const groups = new Map<string, number>();
+  let total = 0;
+  for (const row of rows) {
+    const info = meta.get(String(row.item_id));
+    const meta2 = info as { topic?: string; moduleId?: string } | undefined;
+    const key =
+      meta2?.topic ??
+      (meta2?.moduleId ? (MODULE_LABEL[meta2.moduleId] ?? meta2.moduleId) : undefined) ??
+      "Boshqa";
+    const n = Number(row.wrong_count ?? 1);
+    groups.set(key, (groups.get(key) ?? 0) + n);
+    total += n;
+  }
+
+  return [...groups]
+    .map(([topic, mistakes]) => ({
+      topic,
+      mistakes,
+      errorShare: total ? Math.round((mistakes / total) * 100) : 0,
+    }))
+    .sort((a, b) => b.mistakes - a.mistakes)
+    .slice(0, limit);
+}
+
+export interface FunnelStep {
+  label: string;
+  count: number;
+  percent: number;
+}
+
+/** Voronka: imtihon boshlangandan yakunlangungacha */
+export async function funnel(): Promise<FunnelStep[]> {
+  const { data } = await db()
+    .from("exam_runs")
+    .select("set_id, done_modules, finished_at")
+    .limit(20_000);
+
+  const rows = data ?? [];
+  const total = rows.length;
+  const modulesOf = (setId: string) => (setId.startsWith("telc") ? 5 : 4);
+
+  const atLeastOne = rows.filter(
+    (r) => ((r.done_modules as string[] | null)?.length ?? 0) >= 1,
+  ).length;
+  const half = rows.filter((r) => {
+    const done = (r.done_modules as string[] | null)?.length ?? 0;
+    return done >= Math.ceil(modulesOf(String(r.set_id)) / 2);
+  }).length;
+  const complete = rows.filter((r) => {
+    const done = (r.done_modules as string[] | null)?.length ?? 0;
+    return done >= modulesOf(String(r.set_id));
+  }).length;
+
+  const pct = (n: number) => (total ? Math.round((n / total) * 100) : 0);
+
+  return [
+    { label: "Imtihon boshlandi", count: total, percent: 100 },
+    { label: "Kamida bitta modul", count: atLeastOne, percent: pct(atLeastOne) },
+    { label: "Yarmigacha yetdi", count: half, percent: pct(half) },
+    { label: "To‘liq yakunladi", count: complete, percent: pct(complete) },
+  ];
+}
+
+export interface LevelRow {
+  level: string;
+  attempts: number;
+  avgPercent: number;
+  passRate: number;
+}
+
+/** Daraja bo'yicha o'tish ulushi */
+export async function levelStats(): Promise<LevelRow[]> {
+  const { data } = await db()
+    .from("exam_attempts")
+    .select("format, percent")
+    .limit(20_000);
+
+  const LEVELS = ["A1", "A2", "B1", "B2"];
+  const groups = new Map<string, { sum: number; n: number; pass: number }>();
+
+  for (const row of data ?? []) {
+    const level = String(row.format).split("-")[1]?.toUpperCase() ?? "?";
+    const g = groups.get(level) ?? { sum: 0, n: 0, pass: 0 };
+    g.sum += Number(row.percent);
+    g.n += 1;
+    if (Number(row.percent) >= 60) g.pass += 1;
+    groups.set(level, g);
+  }
+
+  return LEVELS.map((level) => {
+    const g = groups.get(level);
+    return {
+      level,
+      attempts: g?.n ?? 0,
+      avgPercent: g && g.n ? Math.round(g.sum / g.n) : 0,
+      passRate: g && g.n ? Math.round((g.pass / g.n) * 100) : 0,
+    };
+  });
+}
+
+export interface LogEntry {
+  at: string;
+  text: string;
+  who: string;
+}
+
+/** Faoliyat jurnali — so'nggi hodisalar */
+export async function activityLog(limit = 12): Promise<LogEntry[]> {
+  const [exams, uebung, users] = await Promise.all([
+    db()
+      .from("exam_attempts")
+      .select("finished_at, title, percent, user_id")
+      .order("finished_at", { ascending: false })
+      .limit(limit),
+    db()
+      .from("attempts")
+      .select("finished_at, title, score, user_id")
+      .order("finished_at", { ascending: false })
+      .limit(limit),
+    db()
+      .from("users")
+      .select("created_at, first_name")
+      .order("created_at", { ascending: false })
+      .limit(limit),
+  ]);
+
+  const names = new Map<string, string>();
+  const ids = [
+    ...(exams.data ?? []).map((r) => String(r.user_id)),
+    ...(uebung.data ?? []).map((r) => String(r.user_id)),
+  ];
+  if (ids.length) {
+    const { data } = await db()
+      .from("users")
+      .select("id, first_name")
+      .in("id", [...new Set(ids)]);
+    for (const u of data ?? []) names.set(String(u.id), String(u.first_name));
+  }
+
+  const entries: LogEntry[] = [
+    ...(exams.data ?? []).map((r) => ({
+      at: String(r.finished_at),
+      text: `${r.title} — ${r.percent}%`,
+      who: names.get(String(r.user_id)) ?? "—",
+    })),
+    ...(uebung.data ?? []).map((r) => ({
+      at: String(r.finished_at),
+      text: `Mashq: ${r.title} — ${r.score}%`,
+      who: names.get(String(r.user_id)) ?? "—",
+    })),
+    ...(users.data ?? []).map((r) => ({
+      at: String(r.created_at),
+      text: "Yangi foydalanuvchi ro‘yxatdan o‘tdi",
+      who: String(r.first_name),
+    })),
+  ];
+
+  return entries
+    .sort((a, b) => Date.parse(b.at) - Date.parse(a.at))
+    .slice(0, limit);
+}

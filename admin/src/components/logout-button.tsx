@@ -14,7 +14,7 @@ export function LogoutButton() {
           router.refresh();
         });
       }}
-      className="border-line text-muted-3 hover:bg-sand cursor-pointer rounded-lg border px-3 py-[7px] text-[13.5px] font-semibold transition-colors"
+      className="text-on-dark-dim hover:text-paper mt-3 w-full cursor-pointer rounded-lg border border-white/10 px-3 py-[7px] text-[13px] font-semibold transition-colors hover:bg-white/[.06]"
     >
       Chiqish
     </button>
