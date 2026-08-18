@@ -27,6 +27,7 @@ import { TELC_B2_03 } from "@/data/exams/telc-b2-03";
 import { TELC_B2_04 } from "@/data/exams/telc-b2-04";
 import { TELC_B2_05 } from "@/data/exams/telc-b2-05";
 import { TELC_B2_06 } from "@/data/exams/telc-b2-06";
+import { TELC_B2_07 } from "@/data/exams/telc-b2-07";
 
 /** Mavjud imtihon variantlari. Yangi variant shu yerga qo'shiladi. */
 export const EXAM_SETS: ExamSet[] = [
@@ -57,6 +58,7 @@ export const EXAM_SETS: ExamSet[] = [
   TELC_B2_04,
   TELC_B2_05,
   TELC_B2_06,
+  TELC_B2_07,
 ];
 
 // Ishlab chiqish rejimida kontent spetsifikatsiyaga solishtiriladi —
