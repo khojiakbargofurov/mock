@@ -53,6 +53,7 @@ const sourceSansExt = localFont({
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("metadata");
   return {
+    metadataBase: new URL("https://prufung.uz"),
     title: {
       default: t("title"),
       template: "%s · German Mock Test",
@@ -70,7 +71,15 @@ export async function generateMetadata(): Promise<Metadata> {
       description: t("description"),
       type: "website",
       locale: "uz_UZ",
+      siteName: "prufung.uz",
+      url: "https://prufung.uz",
     },
+    twitter: {
+      card: "summary_large_image",
+      title: t("title"),
+      description: t("description"),
+    },
+    alternates: { canonical: "https://prufung.uz" },
   };
 }
 
