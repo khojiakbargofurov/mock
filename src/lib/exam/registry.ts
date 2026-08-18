@@ -2,8 +2,10 @@ import type { ExamItem, ExamSet, ModuleId } from "@/lib/exam/types";
 import { formatSpec, validateSet } from "@/lib/exam/spec";
 import { GOETHE_A1_01 } from "@/data/exams/goethe-a1-01";
 import { GOETHE_A1_02 } from "@/data/exams/goethe-a1-02";
+import { GOETHE_A1_03 } from "@/data/exams/goethe-a1-03";
 import { GOETHE_A2_01 } from "@/data/exams/goethe-a2-01";
 import { GOETHE_A2_02 } from "@/data/exams/goethe-a2-02";
+import { GOETHE_A2_03 } from "@/data/exams/goethe-a2-03";
 import { TELC_B1_01 } from "@/data/exams/telc-b1-01";
 import { TELC_B1_02 } from "@/data/exams/telc-b1-02";
 import { TELC_B2_01 } from "@/data/exams/telc-b2-01";
@@ -13,8 +15,10 @@ import { TELC_B2_02 } from "@/data/exams/telc-b2-02";
 export const EXAM_SETS: ExamSet[] = [
   GOETHE_A1_01,
   GOETHE_A1_02,
+  GOETHE_A1_03,
   GOETHE_A2_01,
   GOETHE_A2_02,
+  GOETHE_A2_03,
   TELC_B1_01,
   TELC_B1_02,
   TELC_B2_01,
