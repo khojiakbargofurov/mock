@@ -7,8 +7,10 @@ import { Badge, Overline } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState, Skeleton } from "@/components/ui/feedback";
 import { useApp, useHydrated } from "@/lib/store";
-import { examSet } from "@/lib/exam/registry";
-import { formatSpec } from "@/lib/exam/spec";
+import { ProgressBar } from "@/components/ui/progress";
+import { examSet, examSetsByFormat } from "@/lib/exam/registry";
+import { formatSpec, FORMAT_SPECS } from "@/lib/exam/spec";
+import type { ExamFormat } from "@/lib/exam/types";
 import { cn } from "@/lib/cn";
 
 export default function ExamOverviewPage() {
@@ -19,8 +21,91 @@ export default function ExamOverviewPage() {
   const runs = useApp((s) => s.examRuns);
 
   const setId = String(params.set ?? "");
+
+  // Manzil format identifikatori bo'lsa (masalan "goethe-a1"),
+  // bu sahifa variant tanlash ro'yxatini ko'rsatadi.
+  const asFormat = Object.hasOwn(FORMAT_SPECS, setId)
+    ? formatSpec(setId as ExamFormat)
+    : undefined;
+
   const set = examSet(setId);
   const spec = set && formatSpec(set.format);
+
+  if (asFormat) {
+    return (
+      <main className="flex flex-1 flex-col gap-[22px] px-6 py-8 lg:px-10 lg:py-[34px]">
+        <div className="flex flex-wrap items-end justify-between gap-5">
+          <div className="flex flex-col gap-[6px]">
+            <Overline className="tracking-[.18em]">{asFormat.label}</Overline>
+            <h1 className="font-display m-0 text-[28px] font-bold lg:text-[32px]">
+              {t("chooseVariant")}
+            </h1>
+            <p className="text-muted-3 m-0 max-w-[62ch] text-[15.5px] leading-[1.6]">
+              {t("variantsIntro", {
+                count: examSetsByFormat(setId).length,
+                points: asFormat.totalPoints,
+                pass: asFormat.passPercent,
+              })}
+            </p>
+          </div>
+          <Link href="/pruefung" className="text-petrol text-[14px] font-semibold">
+            ← {t("backToList")}
+          </Link>
+        </div>
+
+        {!hydrated ? (
+          <Skeleton className="h-[300px] rounded-4xl" />
+        ) : (
+          <div className="grid gap-[14px] xl:grid-cols-2">
+            {examSetsByFormat(setId).map((s) => {
+              const done = runs[s.id]?.doneModules.length ?? 0;
+              const total = asFormat.modules.length;
+
+              return (
+                <Link
+                  key={s.id}
+                  href={`/pruefung/${s.id}`}
+                  className={cn(
+                    "border-line rounded-4xl flex flex-col gap-[14px] border bg-white px-[26px] py-[22px]",
+                    "ease-out-soft transition-[box-shadow,transform] duration-200",
+                    "hover:shadow-card hover:-translate-y-[2px] active:translate-y-0",
+                  )}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="font-display text-[21px] leading-[1.2] font-bold">
+                      {s.title}
+                    </span>
+                    <Badge tone={done === total ? "ok" : "marked"}>
+                      {done === total ? t("statusDone") : `${done}/${total}`}
+                    </Badge>
+                  </div>
+
+                  <div className="flex flex-col gap-[7px]">
+                    <span className="text-slate text-[13.5px]">
+                      {t("modulesDone", { done, total })}
+                    </span>
+                    <ProgressBar
+                      value={Math.round((done / total) * 100)}
+                      size="sm"
+                    />
+                  </div>
+
+                  <span className="text-petrol text-[14px] font-semibold">
+                    {done === 0
+                      ? t("start")
+                      : done === total
+                        ? t("showResult")
+                        : t("continue")}{" "}
+                    →
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </main>
+    );
+  }
 
   if (!set || !spec) {
     return (

@@ -23,9 +23,10 @@ export default async function LandingPage() {
 
   const t = await getTranslations("landing");
 
-  const formats = EXAM_SETS.map((set) => formatSpec(set.format)).filter(
-    (spec) => spec !== undefined,
-  );
+  // Har format bir marta: EXAM_SETS da bitta formatga bir nechta variant bor
+  const formats = [...new Set(EXAM_SETS.map((set) => set.format))]
+    .map((format) => formatSpec(format))
+    .filter((spec) => spec !== undefined);
 
   return (
     <div className="bg-paper flex min-h-screen flex-col">

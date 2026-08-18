@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Badge, Overline } from "@/components/ui/badge";
@@ -41,7 +40,6 @@ export default function PruefungPage() {
   const t = useTranslations("pruefung");
   const hydrated = useHydrated();
   const runs = useApp((s) => s.examRuns);
-  const [openFormat, setOpenFormat] = useState<ExamFormat | null>(null);
 
   if (!hydrated) {
     return (
@@ -67,7 +65,6 @@ export default function PruefungPage() {
       <div className="grid items-start gap-[14px] xl:grid-cols-2">
         {groupByFormat().map(({ format, spec, sets }) => {
           const total = spec.modules.length;
-          const isOpen = openFormat === format;
 
           // Modul biror variantda topshirilgan bo'lsa, format darajasida ham yashil
           const doneAnywhere = new Set(
@@ -76,132 +73,67 @@ export default function PruefungPage() {
           const doneSets = sets.filter(
             (s) => (runs[s.id]?.doneModules.length ?? 0) === total,
           ).length;
-          // Progress — yashil pillalar bilan bir xil hisob: qaysi modul
-          // umuman topshirilgan (variantlar bo'ylab birlashtirib)
           const percent = Math.round((doneAnywhere.size / total) * 100);
 
           return (
-            <div
+            <Link
               key={format}
+              href={`/pruefung/${format}`}
               className={cn(
-                "border-line rounded-4xl overflow-hidden border bg-white",
-                "ease-out-soft transition-shadow duration-200",
-                isOpen && "shadow-card",
+                "border-line rounded-4xl flex flex-col gap-[18px] border bg-white px-[26px] py-[22px]",
+                "ease-out-soft transition-[box-shadow,transform] duration-200",
+                "hover:shadow-card hover:-translate-y-[2px] active:translate-y-0",
               )}
             >
-              <button
-                type="button"
-                onClick={() => setOpenFormat(isOpen ? null : format)}
-                aria-expanded={isOpen}
-                className={cn(
-                  "flex w-full flex-col gap-[18px] px-[26px] py-[22px] text-left",
-                  "ease-out-soft cursor-pointer transition-colors duration-200",
-                  "hover:bg-paper focus-visible:bg-paper",
-                )}
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex flex-col gap-[6px]">
-                    <span className="text-muted-2 text-[12px] tracking-[.14em] uppercase">
-                      {spec.provider === "goethe" ? "Goethe-Institut" : "telc"}{" "}
-                      · {t("variantCount", { count: sets.length })}
-                    </span>
-                    <span className="font-display text-[22px] leading-[1.2] font-bold">
-                      {spec.label}
-                    </span>
-                  </div>
-                  <Badge tone={doneSets === sets.length ? "ok" : "marked"}>
-                    {doneSets === sets.length
-                      ? t("statusDone")
-                      : `${doneSets}/${sets.length}`}
-                  </Badge>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col gap-[6px]">
+                  <span className="text-muted-2 text-[12px] tracking-[.14em] uppercase">
+                    {spec.provider === "goethe" ? "Goethe-Institut" : "telc"} ·{" "}
+                    {t("variantCount", { count: sets.length })}
+                  </span>
+                  <span className="font-display text-[22px] leading-[1.2] font-bold">
+                    {spec.label}
+                  </span>
                 </div>
+                <Badge tone={doneSets === sets.length ? "ok" : "marked"}>
+                  {doneSets === sets.length
+                    ? t("statusDone")
+                    : `${doneSets}/${sets.length}`}
+                </Badge>
+              </div>
 
-                <div className="flex flex-wrap gap-[7px]">
-                  {spec.modules.map((m) => (
-                    <span
-                      key={m.id}
-                      className={cn(
-                        "rounded-pill px-[13px] py-[6px] text-[13px] font-semibold",
-                        doneAnywhere.has(m.id)
-                          ? "bg-ok-bg text-ok-fg"
-                          : "bg-sand text-muted-3",
-                      )}
-                    >
-                      {m.label} · {Math.round(m.timeSec / 60)}′
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex flex-col gap-[7px]">
-                  <div className="flex justify-between text-[13.5px]">
-                    <span className="text-slate">
-                      {t("modulesDone", {
-                        done: doneAnywhere.size,
-                        total,
-                      })}
-                    </span>
-                    <span className="text-muted-2 tnum">
-                      {spec.totalPoints} {t("points")} · {spec.passPercent}%
-                    </span>
-                  </div>
-                  <ProgressBar value={percent} size="sm" />
-                </div>
-
-                <span className="text-petrol flex items-center gap-[6px] text-[14px] font-semibold">
-                  {t("chooseVariant")}
+              <div className="flex flex-wrap gap-[7px]">
+                {spec.modules.map((m) => (
                   <span
-                    aria-hidden
+                    key={m.id}
                     className={cn(
-                      "ease-out-soft inline-block transition-transform duration-200",
-                      isOpen && "rotate-180",
+                      "rounded-pill px-[13px] py-[6px] text-[13px] font-semibold",
+                      doneAnywhere.has(m.id)
+                        ? "bg-ok-bg text-ok-fg"
+                        : "bg-sand text-muted-3",
                     )}
                   >
-                    ↓
+                    {m.label} · {Math.round(m.timeSec / 60)}′
                   </span>
-                </span>
-              </button>
+                ))}
+              </div>
 
-              {isOpen && (
-                <div className="border-line flex flex-col gap-[8px] border-t px-[18px] py-[16px]">
-                  {sets.map((set) => {
-                    const done = runs[set.id]?.doneModules.length ?? 0;
-
-                    return (
-                      <Link
-                        key={set.id}
-                        href={`/pruefung/${set.id}`}
-                        className={cn(
-                          "rounded-2xl flex items-center gap-[14px] px-[12px] py-[12px]",
-                          "ease-out-soft transition-colors duration-200",
-                          "hover:bg-sand focus-visible:bg-sand",
-                        )}
-                      >
-                        <div className="flex min-w-0 flex-1 flex-col gap-[7px]">
-                          <span className="text-[15px] font-semibold">
-                            {set.title}
-                          </span>
-                          <ProgressBar
-                            value={Math.round((done / total) * 100)}
-                            size="sm"
-                          />
-                        </div>
-                        <span className="text-muted-2 tnum shrink-0 text-[13px]">
-                          {done}/{total}
-                        </span>
-                        <span className="text-petrol shrink-0 text-[14px] font-semibold">
-                          {done === 0
-                            ? t("start")
-                            : done === total
-                              ? t("showResult")
-                              : t("continue")}{" "}
-                          →
-                        </span>
-                      </Link>
-                    );
-                  })}
+              <div className="flex flex-col gap-[7px]">
+                <div className="flex justify-between text-[13.5px]">
+                  <span className="text-slate">
+                    {t("modulesDone", { done: doneAnywhere.size, total })}
+                  </span>
+                  <span className="text-muted-2 tnum">
+                    {spec.totalPoints} {t("points")} · {spec.passPercent}%
+                  </span>
                 </div>
-              )}
-            </div>
+                <ProgressBar value={percent} size="sm" />
+              </div>
+
+              <span className="text-petrol text-[14px] font-semibold">
+                {t("chooseVariant")} →
+              </span>
+            </Link>
           );
         })}
       </div>
