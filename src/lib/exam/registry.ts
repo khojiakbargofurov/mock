@@ -4,18 +4,22 @@ import { GOETHE_A1_01 } from "@/data/exams/goethe-a1-01";
 import { GOETHE_A1_02 } from "@/data/exams/goethe-a1-02";
 import { GOETHE_A1_03 } from "@/data/exams/goethe-a1-03";
 import { GOETHE_A1_04 } from "@/data/exams/goethe-a1-04";
+import { GOETHE_A1_05 } from "@/data/exams/goethe-a1-05";
 import { GOETHE_A2_01 } from "@/data/exams/goethe-a2-01";
 import { GOETHE_A2_02 } from "@/data/exams/goethe-a2-02";
 import { GOETHE_A2_03 } from "@/data/exams/goethe-a2-03";
 import { GOETHE_A2_04 } from "@/data/exams/goethe-a2-04";
+import { GOETHE_A2_05 } from "@/data/exams/goethe-a2-05";
 import { TELC_B1_01 } from "@/data/exams/telc-b1-01";
 import { TELC_B1_02 } from "@/data/exams/telc-b1-02";
 import { TELC_B1_03 } from "@/data/exams/telc-b1-03";
 import { TELC_B1_04 } from "@/data/exams/telc-b1-04";
+import { TELC_B1_05 } from "@/data/exams/telc-b1-05";
 import { TELC_B2_01 } from "@/data/exams/telc-b2-01";
 import { TELC_B2_02 } from "@/data/exams/telc-b2-02";
 import { TELC_B2_03 } from "@/data/exams/telc-b2-03";
 import { TELC_B2_04 } from "@/data/exams/telc-b2-04";
+import { TELC_B2_05 } from "@/data/exams/telc-b2-05";
 
 /** Mavjud imtihon variantlari. Yangi variant shu yerga qo'shiladi. */
 export const EXAM_SETS: ExamSet[] = [
@@ -23,18 +27,22 @@ export const EXAM_SETS: ExamSet[] = [
   GOETHE_A1_02,
   GOETHE_A1_03,
   GOETHE_A1_04,
+  GOETHE_A1_05,
   GOETHE_A2_01,
   GOETHE_A2_02,
   GOETHE_A2_03,
   GOETHE_A2_04,
+  GOETHE_A2_05,
   TELC_B1_01,
   TELC_B1_02,
   TELC_B1_03,
   TELC_B1_04,
+  TELC_B1_05,
   TELC_B2_01,
   TELC_B2_02,
   TELC_B2_03,
   TELC_B2_04,
+  TELC_B2_05,
 ];
 
 // Ishlab chiqish rejimida kontent spetsifikatsiyaga solishtiriladi —
