@@ -8,8 +8,10 @@ import { GOETHE_A2_02 } from "@/data/exams/goethe-a2-02";
 import { GOETHE_A2_03 } from "@/data/exams/goethe-a2-03";
 import { TELC_B1_01 } from "@/data/exams/telc-b1-01";
 import { TELC_B1_02 } from "@/data/exams/telc-b1-02";
+import { TELC_B1_03 } from "@/data/exams/telc-b1-03";
 import { TELC_B2_01 } from "@/data/exams/telc-b2-01";
 import { TELC_B2_02 } from "@/data/exams/telc-b2-02";
+import { TELC_B2_03 } from "@/data/exams/telc-b2-03";
 
 /** Mavjud imtihon variantlari. Yangi variant shu yerga qo'shiladi. */
 export const EXAM_SETS: ExamSet[] = [
@@ -21,8 +23,10 @@ export const EXAM_SETS: ExamSet[] = [
   GOETHE_A2_03,
   TELC_B1_01,
   TELC_B1_02,
+  TELC_B1_03,
   TELC_B2_01,
   TELC_B2_02,
+  TELC_B2_03,
 ];
 
 // Ishlab chiqish rejimida kontent spetsifikatsiyaga solishtiriladi —
