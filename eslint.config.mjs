@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Admin paneli alohida loyiha — o'z eslint sozlamasi bor
+    "admin/**",
   ]),
 ]);
 

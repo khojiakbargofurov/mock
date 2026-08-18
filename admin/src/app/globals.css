@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  /* Asosiy ilova bilan bir xil palitra — "imtihon daftari" */
+  --color-ink: #14191f;
+  --color-paper: #f6f2eb;
+  --color-canvas: #e7e1d6;
+  --color-surface: #ffffff;
+  --color-sand: #f1eada;
+  --color-sand-deep: #efe8da;
+  --color-petrol: #0f6b78;
+  --color-petrol-bg: #eaf2f3;
+  --color-accent: #c98a3e;
+
+  --color-line: #e6dfd1;
+  --color-line-soft: #efe8da;
+
+  --color-slate: #3c4650;
+  --color-muted: #7a6e5d;
+  --color-muted-2: #8b8172;
+  --color-muted-3: #5b5548;
+
+  --color-ok-bg: #e8f1e7;
+  --color-ok-fg: #26502a;
+  --color-warn-bg: #fbf0dd;
+  --color-warn-fg: #6b4a12;
+  --color-bad-bg: #f7e7e4;
+  --color-bad-fg: #6d2b21;
+
+  --radius-card: 18px;
+
+  --font-display: var(--font-display-local), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-body-local), ui-sans-serif, system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Raqamlar jadvalda tik turishi uchun */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
