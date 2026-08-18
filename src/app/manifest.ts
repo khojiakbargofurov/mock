@@ -6,7 +6,7 @@ import type { MetadataRoute } from "next";
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "German Mock Test",
+    name: "prufung.uz — Goethe va telc imtihoni",
     short_name: "Mock Test",
     description:
       "Goethe va telc formatidagi mashq imtihonlari: A1–B2, xatolar daftari va lug'at.",

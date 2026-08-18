@@ -59,7 +59,7 @@ export async function generateMetadata(): Promise<Metadata> {
       template: "%s · prufung.uz",
     },
     description: t("description"),
-    applicationName: "German Mock Test",
+    applicationName: "prufung.uz",
     appleWebApp: {
       capable: true,
       title: "Mock Test",
@@ -79,7 +79,9 @@ export async function generateMetadata(): Promise<Metadata> {
       title: t("title"),
       description: t("description"),
     },
-    alternates: { canonical: "https://prufung.uz" },
+    // Canonical bu yerda berilmaydi: root layoutdagi qiymatni hamma sahifa
+    // meros oladi va barchasi bosh sahifaning nusxasiga aylanib qoladi.
+    // Har sahifa o'zining canonical'ini o'zi e'lon qiladi.
   };
 }
 

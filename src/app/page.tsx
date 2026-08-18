@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -8,6 +9,10 @@ import { readSessionToken, SESSION_COOKIE } from "@/lib/auth/session";
 import { EXAM_SETS } from "@/lib/exam/registry";
 import { formatSpec } from "@/lib/exam/spec";
 import { cn } from "@/lib/cn";
+
+// Bosh sahifa o'zini canonical qiladi: utm parametrlari va boshqa
+// variantlar shu manzilga yig'ilsin.
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 /**
  * Kirish sahifasi (landing).

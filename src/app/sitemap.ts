@@ -28,7 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...formats,
     {
-      url: `${BASE}/uebung`,
+      url: `${BASE}/mock`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.7,
