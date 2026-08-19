@@ -10,6 +10,11 @@ import type {
   SprechenItem,
   ZuordnungItem,
 } from "@/lib/exam/types";
+import type {
+  CriterionCheck,
+  Finding,
+  Verdict,
+} from "@/lib/schreiben/analyze";
 
 /** a / b / c yoki Richtig / Falsch — imtihon varaqasidagi kabi katakcha bilan */
 export function ChoiceField({
@@ -353,17 +358,56 @@ export function SprechenField({
   );
 }
 
-/** O'zini baholash ro'yxati — Schreiben/Sprechen ballari shundan chiqadi */
+const VERDICT_BADGE: Record<Verdict, { label: string; className: string }> = {
+  ok: { label: "topildi", className: "bg-ok-bg text-ok-fg" },
+  teilweise: { label: "qisman", className: "bg-sand text-accent" },
+  fehlt: { label: "topilmadi", className: "bg-bad-bg text-bad-fg" },
+  manuell: { label: "o‘zingiz", className: "bg-sand text-muted-3" },
+};
+
+const FINDING_MARK: Record<Finding["level"], { sign: string; className: string }> =
+  {
+    ok: { sign: "✓", className: "text-ok-fg" },
+    warn: { sign: "!", className: "text-accent" },
+    bad: { sign: "×", className: "text-bad-fg" },
+  };
+
+/** Bitta kuzatuv qatori — avtomatik tekshiruv natijasi */
+export function FindingRow({ finding }: { finding: Finding }) {
+  const mark = FINDING_MARK[finding.level];
+  return (
+    <li className="flex gap-[10px] text-[14px] leading-[1.5]">
+      <span className={cn("flex-none font-bold", mark.className)}>
+        {mark.sign}
+      </span>
+      <span className="flex flex-col gap-[2px]">
+        <span className="text-muted-3">{finding.text}</span>
+        {finding.detail && (
+          <span className="text-muted-2 text-[13px] italic">
+            {finding.detail}
+          </span>
+        )}
+      </span>
+    </li>
+  );
+}
+
+/**
+ * O'zini baholash ro'yxati — Schreiben/Sprechen ballari shundan chiqadi.
+ * `checks` berilsa, har mezon ostida avtomatik tekshiruv natijasi ko'rinadi.
+ */
 export function RubricList({
   criteria,
   checked,
   onToggle,
   sample,
+  checks,
 }: {
   criteria: RubricCriterion[];
   checked: string[];
   onToggle: (id: string) => void;
   sample: string;
+  checks?: CriterionCheck[];
 }) {
   const [open, setOpen] = React.useState(false);
   const got = criteria
@@ -385,15 +429,23 @@ export function RubricList({
       <div className="flex flex-col gap-2">
         {criteria.map((criterion) => {
           const on = checked.includes(criterion.id);
+          const check = checks?.find((c) => c.id === criterion.id);
+          const badge = check && VERDICT_BADGE[check.verdict];
           return (
-            <button
+            <div
               key={criterion.id}
+              className={cn(
+                "rounded-2xl border transition-colors",
+                on ? "border-ok-bd bg-ok-bg" : "border-line",
+              )}
+            >
+            <button
               type="button"
               aria-pressed={on}
               onClick={() => onToggle(criterion.id)}
               className={cn(
-                "flex items-start gap-3 rounded-2xl border px-[18px] py-[13px] text-left transition-colors",
-                on ? "border-ok-bd bg-ok-bg" : "border-line hover:bg-sand",
+                "flex w-full items-start gap-3 rounded-2xl px-[18px] py-[13px] text-left transition-colors",
+                on ? "" : "hover:bg-sand",
               )}
             >
               <span
@@ -407,17 +459,36 @@ export function RubricList({
                 {on ? "✓" : ""}
               </span>
               <span className="flex flex-col gap-[3px]">
-                <span className="text-[15.5px] font-semibold">
+                <span className="flex flex-wrap items-center gap-2 text-[15.5px] font-semibold">
                   {criterion.label}{" "}
                   <span className="text-muted-2 tnum font-normal">
                     · {criterion.points} ball
                   </span>
+                  {badge && (
+                    <span
+                      className={cn(
+                        "rounded-[6px] px-2 py-[2px] text-[12px] font-semibold",
+                        badge.className,
+                      )}
+                    >
+                      {badge.label}
+                    </span>
+                  )}
                 </span>
                 <span className="text-muted-3 text-[14.5px] leading-[1.5]">
                   {criterion.question}
                 </span>
               </span>
             </button>
+
+            {check && check.findings.length > 0 && (
+              <ul className="border-line m-0 flex list-none flex-col gap-[6px] border-t px-[18px] py-3 pl-[51px]">
+                {check.findings.map((finding, i) => (
+                  <FindingRow key={i} finding={finding} />
+                ))}
+              </ul>
+            )}
+            </div>
           );
         })}
       </div>

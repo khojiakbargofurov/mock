@@ -10,12 +10,12 @@ import { Button } from "@/components/ui/button";
 import { EmptyState, Skeleton } from "@/components/ui/feedback";
 import {
   ChoiceField,
-  FreitextField,
   GapField,
   RubricList,
   SprechenField,
   ZuordnungField,
 } from "@/components/exam/fields";
+import { SchreibenCheck } from "@/components/exam/schreiben-check";
 import { StimulusView } from "@/components/exam/stimulus";
 import { useApp, useHydrated } from "@/lib/store";
 import { examSet, moduleItems } from "@/lib/exam/registry";
@@ -160,19 +160,16 @@ export default function ExamModulePage() {
         return null;
       case "freitext":
         return (
-          <div key={item.id} className="flex flex-col gap-4">
-            <FreitextField
-              item={item}
-              value={answers.values[item.id]}
-              onChange={(v) => setAnswer(item.id, v)}
-            />
-            <RubricList
-              criteria={item.criteria}
-              checked={answers.rubric[item.id] ?? []}
-              onToggle={(c) => useApp.getState().toggleExamRubric(item.id, c)}
-              sample={item.sample}
-            />
-          </div>
+          <SchreibenCheck
+            key={item.id}
+            item={item}
+            format={set.format}
+            value={answers.values[item.id]}
+            checked={answers.rubric[item.id] ?? []}
+            onChange={(v) => setAnswer(item.id, v)}
+            onToggle={(c) => useApp.getState().toggleExamRubric(item.id, c)}
+            onApply={(ids) => useApp.getState().setExamRubric(item.id, ids)}
+          />
         );
       case "sprechen":
         return (

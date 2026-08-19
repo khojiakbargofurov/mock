@@ -183,6 +183,8 @@ interface AppState {
   startExamModule: (setId: string, moduleId: ModuleId) => boolean;
   setExamAnswer: (itemId: string, value: string) => void;
   toggleExamRubric: (itemId: string, criterionId: string) => void;
+  /** Avtomatik tekshiruv natijasini bir yo'la qo'yadi (qo'lda belgilanganlar o'rniga) */
+  setExamRubric: (itemId: string, criterionIds: string[]) => void;
   /** Audio o'ynatilganini qayd qiladi (necha marta qolganini hisoblash uchun) */
   registerPlay: (blockId: string) => void;
   goToTeil: (index: number) => void;
@@ -580,6 +582,28 @@ export const useApp = create<AppState>()(
                 answers: {
                   ...run.answers,
                   rubric: { ...run.answers.rubric, [itemId]: next },
+                },
+              },
+            },
+          };
+        }),
+
+      setExamRubric: (itemId, criterionIds) =>
+        set((s) => {
+          const session = s.examSession;
+          if (!session) return s;
+          const run = s.examRuns[session.setId];
+          if (!run) return s;
+
+          return {
+            examRuns: {
+              ...s.examRuns,
+              [session.setId]: {
+                ...run,
+                updatedAt: Date.now(),
+                answers: {
+                  ...run.answers,
+                  rubric: { ...run.answers.rubric, [itemId]: criterionIds },
                 },
               },
             },
