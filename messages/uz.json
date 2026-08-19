@@ -280,7 +280,19 @@
   },
   "metadata": {
     "title": "Goethe va telc imtihoniga tayyorgarlik — prufung.uz",
-    "description": "A1, A2, B1, B2 uchun rasmiy formatdagi mock imtihonlar: Hören, Lesen, Schreiben, Sprechen. 28 ta to‘liq variant, xatolar daftari va so‘z takrorlash. Bepul."
+    "description": "A1, A2, B1, B2 uchun rasmiy formatdagi mock imtihonlar: Hören, Lesen, Schreiben, Sprechen. 28 ta to‘liq variant, xatolar daftari va so‘z takrorlash. Bepul.",
+    "pruefung": {
+      "title": "Goethe va telc mock imtihonlari",
+      "description": "28 ta to‘liq variant: Goethe-Zertifikat A1, A2 va telc Deutsch B1, B2. Har birida Hören, Lesen, Schreiben va Sprechen modullari, modul taymeri va rasmiy ball hisobi."
+    },
+    "wortschatz": {
+      "title": "Nemis tili lug‘ati — 640 so‘z",
+      "description": "A1–B2 uchun 32 ta mavzuli to‘plam, jami 640 so‘z: artikl va ko‘plik shakli, misol gap va o‘zbekcha tarjima. Leitner qutilari bo‘yicha interval takrorlash."
+    },
+    "mock": {
+      "title": "Nemis tili mashqlari — Grammatik, Wortschatz, Lesen, Hören",
+      "description": "A1, A2, B1, B2 darajalari uchun qisqa mavzuli testlar: 164 savol, har biriga nemischa izoh. Daraja va ko‘nikmani tanlab, 12 savollik mashq boshlang."
+    }
   },
   "auth": {
     "overline": "Hisob",

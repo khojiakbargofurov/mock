@@ -280,7 +280,19 @@
   },
   "metadata": {
     "title": "Goethe- und telc-Prüfungsvorbereitung — prufung.uz",
-    "description": "Übungsprüfungen im offiziellen Format für A1, A2, B1 und B2: Hören, Lesen, Schreiben, Sprechen. 28 vollständige Sätze, Fehlerbuch und Vokabeltraining."
+    "description": "Übungsprüfungen im offiziellen Format für A1, A2, B1 und B2: Hören, Lesen, Schreiben, Sprechen. 28 vollständige Sätze, Fehlerbuch und Vokabeltraining.",
+    "pruefung": {
+      "title": "Goethe- und telc-Modellprüfungen",
+      "description": "28 vollständige Übungssätze: Goethe-Zertifikat A1, A2 und telc Deutsch B1, B2 — mit Hören, Lesen, Schreiben und Sprechen, Modul-Timer und offizieller Punkteberechnung."
+    },
+    "wortschatz": {
+      "title": "Deutscher Wortschatz — 640 Wörter",
+      "description": "32 thematische Sets von A1 bis B2 mit insgesamt 640 Wörtern: Artikel, Pluralform, Beispielsatz und Übersetzung. Wiederholung nach dem Leitner-System."
+    },
+    "mock": {
+      "title": "Deutsch üben — Grammatik, Wortschatz, Lesen, Hören",
+      "description": "Kurze thematische Tests für A1, A2, B1 und B2: 164 Aufgaben, jede mit Erklärung. Niveau und Fertigkeit wählen und mit 12 Aufgaben starten."
+    }
   },
   "auth": {
     "overline": "Konto",

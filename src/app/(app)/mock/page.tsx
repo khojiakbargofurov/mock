@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Chip, Overline } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/feedback";
 import {
   LevelCardRow,
   LevelCardTall,
@@ -18,25 +17,27 @@ import { cn } from "@/lib/cn";
 
 const TEST_LENGTH = 12;
 
+/** Profil o'qilgunicha ko'rsatiladigan daraja — store'dagi standart qiymat */
+const FALLBACK_LEVEL: Level = "B1";
+
 export default function MockPage() {
   const t = useTranslations("mock");
   const router = useRouter();
   const hydrated = useHydrated();
-  const targetLevel = useApp((s) => s.profile.targetLevel);
-  const timeLimit = useApp((s) => s.profile.settings.timeLimit);
+  const storedLevel = useApp((s) => s.profile.targetLevel);
+  const storedTimeLimit = useApp((s) => s.profile.settings.timeLimit);
   const statuses = useLevelStatuses();
 
-  const [level, setLevel] = React.useState<Level>(targetLevel);
-  const [skill, setSkill] = React.useState<Skill | null>(null);
+  // Darajalar, ko'nikmalar va savol sonlari statik — serverda ham chiziladi.
+  // Profildagi maqsad daraja va vaqt chegarasi shaxsiy: gidratatsiyagacha
+  // standart qiymat ishlatiladi, shunda server va brauzer bir xil chizadi.
+  const targetLevel = hydrated ? storedLevel : FALLBACK_LEVEL;
+  const timeLimit = hydrated ? storedTimeLimit : true;
 
-  if (!hydrated) {
-    return (
-      <main className="flex flex-1 flex-col gap-4 px-6 py-8 lg:px-10">
-        <Skeleton className="h-[60px] w-[50%] rounded-xl" />
-        <Skeleton className="h-[220px] rounded-4xl" delay={0.12} />
-      </main>
-    );
-  }
+  // Foydalanuvchi hali tanlamagan bo'lsa — profildagi maqsad daraja
+  const [chosenLevel, setLevel] = React.useState<Level | null>(null);
+  const [skill, setSkill] = React.useState<Skill | null>(null);
+  const level = chosenLevel ?? targetLevel;
 
   const available = questionCount(level, skill);
   const count = Math.min(TEST_LENGTH, available);

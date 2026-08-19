@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Badge, Overline } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/feedback";
 import { ProgressBar } from "@/components/ui/progress";
-import { useApp, useHydrated } from "@/lib/store";
+import { useApp, useHydrated, type ExamRun } from "@/lib/store";
 import { EXAM_SETS } from "@/lib/exam/registry";
 import { formatSpec } from "@/lib/exam/spec";
 import type { ExamFormat, ExamSet, FormatSpec } from "@/lib/exam/types";
 import { cn } from "@/lib/cn";
+
+const NO_RUNS: Record<string, ExamRun> = {};
 
 interface FormatGroup {
   format: ExamFormat;
@@ -39,16 +40,13 @@ function groupByFormat(): FormatGroup[] {
 export default function PruefungPage() {
   const t = useTranslations("pruefung");
   const hydrated = useHydrated();
-  const runs = useApp((s) => s.examRuns);
+  const stored = useApp((s) => s.examRuns);
 
-  if (!hydrated) {
-    return (
-      <main className="flex flex-1 flex-col gap-4 px-6 py-8 lg:px-10">
-        <Skeleton className="h-[76px] w-[60%] rounded-xl" />
-        <Skeleton className="h-[210px] rounded-4xl" delay={0.12} />
-      </main>
-    );
-  }
+  // Kartalarning o'zi statik — formatlar, modullar va ballar kodda turadi,
+  // shuning uchun ular serverda ham chiziladi (krauler shu matnni ko'radi).
+  // Faqat shaxsiy progress gidratatsiyani kutadi: server ham, brauzerdagi
+  // birinchi render ham bo'sh qiymat bilan ishlaydi, mos kelmaslik chiqmaydi.
+  const runs: Record<string, ExamRun> = hydrated ? stored : NO_RUNS;
 
   return (
     <main className="flex flex-1 flex-col gap-[22px] px-6 py-8 lg:px-10 lg:py-[34px]">

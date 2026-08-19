@@ -7,47 +7,31 @@ import { useTranslations } from "next-intl";
 import { Chip, Overline } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/feedback";
 import { ProgressBar } from "@/components/ui/progress";
 import { useApp, useHydrated } from "@/lib/store";
 import { useNow } from "@/lib/now";
-import { LEVELS, type Level } from "@/lib/types";
+import { LEVELS, type Level, type VocabCardState } from "@/lib/types";
 import { reviewSlug, setStats, vocabSets, VOCAB_BANK } from "@/lib/vocab";
 import { cn } from "@/lib/cn";
+
+const NO_VOCAB: Record<string, VocabCardState> = {};
 
 export default function WortschatzPage() {
   const t = useTranslations("wortschatz");
   const router = useRouter();
   const hydrated = useHydrated();
-  const vocab = useApp((s) => s.vocab);
+  const stored = useApp((s) => s.vocab);
   const now = useNow();
   const [level, setLevel] = React.useState<Level | null>(null);
+
+  // To'plamlar, mavzular va so'z sonlari statik — serverda ham chiziladi.
+  // O'zlashtirilgan/takrorlash kerak bo'lgan so'zlar esa shaxsiy: ular
+  // gidratatsiyagacha bo'sh, shuning uchun server va brauzer bir xil chizadi.
+  const vocab = hydrated ? stored : NO_VOCAB;
 
   const sets = React.useMemo(() => vocabSets(level), [level]);
   const words = React.useMemo(() => sets.flatMap((s) => s.words), [sets]);
   const totals = setStats(words, vocab, now);
-
-  if (!hydrated) {
-    return (
-      <main className="flex flex-1 flex-col gap-4 px-6 py-8 lg:px-10">
-        <Skeleton className="h-[76px] w-[60%] rounded-xl" />
-        <div className="grid gap-[14px] sm:grid-cols-3">
-          {[0, 1, 2].map((i) => (
-            <Skeleton key={i} className="h-[78px] rounded-2xl" delay={i * 0.1} />
-          ))}
-        </div>
-        <div className="grid gap-[14px] xl:grid-cols-2">
-          {[0, 1, 2, 3].map((i) => (
-            <Skeleton
-              key={i}
-              className="h-[164px] rounded-4xl"
-              delay={0.12 + i * 0.1}
-            />
-          ))}
-        </div>
-      </main>
-    );
-  }
 
   return (
     <main className="flex flex-1 flex-col gap-[22px] px-6 py-8 lg:px-10 lg:py-[34px]">

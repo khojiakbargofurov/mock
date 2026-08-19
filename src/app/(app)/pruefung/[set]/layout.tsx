@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { JsonLd, SITE_URL } from "@/components/json-ld";
 import { examSet } from "@/lib/exam/registry";
 import { formatSpec, FORMAT_SPECS } from "@/lib/exam/spec";
 import type { ExamFormat } from "@/lib/exam/types";
@@ -35,8 +37,38 @@ export async function generateMetadata({
   };
 }
 
-export default function ExamSetLayout({
+export default async function ExamSetLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
-  return children;
+  params,
+}: Readonly<{ children: React.ReactNode; params: Promise<{ set: string }> }>) {
+  const { set } = await params;
+
+  // "Bosh sahifa → Prüfung → format" zanjiri faqat indeksga tushadigan
+  // format sahifalarida — variant sahifalari sitemapda yo'q.
+  if (!Object.hasOwn(FORMAT_SPECS, set)) return children;
+
+  const spec = formatSpec(set as ExamFormat);
+  const t = await getTranslations("nav");
+
+  return (
+    <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "prufung.uz", item: SITE_URL },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: t("pruefung"),
+              item: `${SITE_URL}/pruefung`,
+            },
+            { "@type": "ListItem", position: 3, name: spec?.label },
+          ],
+        }}
+      />
+      {children}
+    </>
+  );
 }

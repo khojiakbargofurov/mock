@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/app-shell";
+import { JsonLd, SITE_URL } from "@/components/json-ld";
 import { LocaleSwitch } from "@/components/locale-switch";
 import { readSessionToken, SESSION_COOKIE } from "@/lib/auth/session";
 import { EXAM_SETS } from "@/lib/exam/registry";
@@ -33,8 +34,34 @@ export default async function LandingPage() {
     .map((format) => formatSpec(format))
     .filter((spec) => spec !== undefined);
 
+  const meta = await getTranslations("metadata");
+
   return (
     <div className="bg-paper flex min-h-screen flex-col">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "@id": `${SITE_URL}/#website`,
+              url: SITE_URL,
+              name: "prufung.uz",
+              description: meta("description"),
+              inLanguage: ["uz", "de", "en"],
+              publisher: { "@id": `${SITE_URL}/#organization` },
+            },
+            {
+              "@type": "Organization",
+              "@id": `${SITE_URL}/#organization`,
+              name: "prufung.uz",
+              url: SITE_URL,
+              logo: `${SITE_URL}/icon-512.png`,
+              description: meta("description"),
+            },
+          ],
+        }}
+      />
       <header className="mx-auto flex w-full max-w-[1100px] flex-wrap items-center justify-between gap-3 px-6 py-6">
         <Logo />
         <nav className="flex items-center gap-3 sm:gap-5">

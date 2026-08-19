@@ -280,7 +280,19 @@
   },
   "metadata": {
     "title": "Goethe & telc exam practice — prufung.uz",
-    "description": "Mock exams in the official format for German A1, A2, B1 and B2: listening, reading, writing, speaking. 28 complete sets, a mistake book and vocabulary review."
+    "description": "Mock exams in the official format for German A1, A2, B1 and B2: listening, reading, writing, speaking. 28 complete sets, a mistake book and vocabulary review.",
+    "pruefung": {
+      "title": "Goethe and telc mock exams",
+      "description": "28 complete practice sets: Goethe-Zertifikat A1, A2 and telc Deutsch B1, B2 — each with Hören, Lesen, Schreiben and Sprechen modules, module timers and official scoring."
+    },
+    "wortschatz": {
+      "title": "German vocabulary — 640 words",
+      "description": "32 topic sets from A1 to B2 with 640 words in total: article, plural form, example sentence and translation. Spaced repetition using Leitner boxes."
+    },
+    "mock": {
+      "title": "German practice — grammar, vocabulary, reading, listening",
+      "description": "Short topic drills for A1, A2, B1 and B2: 164 questions, each with an explanation. Pick a level and a skill, then start a 12-question set."
+    }
   },
   "auth": {
     "overline": "Account",

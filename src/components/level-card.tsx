@@ -3,10 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
-import type { Level } from "@/lib/types";
+import type { Attempt, Level } from "@/lib/types";
 import { LEVEL_NAMES } from "@/lib/types";
 import { questionCount } from "@/lib/questions";
-import { useApp, averageScore } from "@/lib/store";
+import { useApp, useHydrated, averageScore } from "@/lib/store";
 
 /** Dizayn: A1 → B2 tomon fon tobora quyuqlashadi, B2 esa to'liq siyoh rangda */
 const TINT: Record<Level, string> = {
@@ -25,9 +25,16 @@ export interface LevelStatus {
 }
 
 /** Daraja holatini urinishlar tarixidan hisoblaydi */
+const NO_ATTEMPTS: Attempt[] = [];
+
 export function useLevelStatuses(): LevelStatus[] {
   const t = useTranslations("levelCard");
-  const attempts = useApp((s) => s.attempts);
+  const hydrated = useHydrated();
+  const stored = useApp((s) => s.attempts);
+
+  // Urinishlar localStorage'dan keladi — serverda va brauzerdagi birinchi
+  // renderda bo'sh, shunda kartalar mos kelmaslik chiqarmay chiziladi.
+  const attempts = hydrated ? stored : NO_ATTEMPTS;
 
   return (["A1", "A2", "B1", "B2"] as Level[]).map((level) => {
     const mine = attempts.filter((a) => a.level === level);
