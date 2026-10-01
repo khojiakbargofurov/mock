@@ -215,6 +215,98 @@
   }
 }
 
+/* Landing page — sahifaga chuqurlik beradigan, rasmsiz editorial detallar. */
+.landing-hero {
+  background-image:
+    radial-gradient(circle at 86% 18%, rgba(201, 138, 62, 0.16), transparent 25rem),
+    radial-gradient(circle at 8% 92%, rgba(15, 107, 120, 0.13), transparent 23rem),
+    linear-gradient(135deg, #171d24 0%, #101419 66%, #181b20 100%);
+}
+
+.landing-hero-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: linear-gradient(to right, black, transparent 66%);
+}
+
+.landing-hero-orbit {
+  position: absolute;
+  width: 34rem;
+  height: 34rem;
+  right: -9rem;
+  top: -13rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  box-shadow:
+    0 0 0 5rem rgba(255, 255, 255, 0.018),
+    0 0 0 10rem rgba(255, 255, 255, 0.012);
+}
+
+.landing-accent-mark::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.02em;
+  height: 0.09em;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.42;
+  transform: rotate(-1.5deg);
+}
+
+.landing-demo {
+  animation: landingFloat 7s ease-in-out infinite;
+}
+
+.landing-final {
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(201, 138, 62, 0.22), transparent 23rem),
+    radial-gradient(circle at 88% 100%, rgba(15, 107, 120, 0.22), transparent 25rem),
+    linear-gradient(135deg, #171d24, #0d1116);
+}
+
+.landing-final::before,
+.landing-final::after {
+  content: "";
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 999px;
+}
+
+.landing-final::before {
+  width: 23rem;
+  height: 23rem;
+  left: -12rem;
+  top: -12rem;
+}
+
+.landing-final::after {
+  width: 18rem;
+  height: 18rem;
+  right: -8rem;
+  bottom: -10rem;
+}
+
+.landing-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+@keyframes landingFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-0.25deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(0.25deg);
+  }
+}
+
 /* Harakatni kamaytirish sozlamasini hurmat qilamiz */
 @media (prefers-reduced-motion: reduce) {
   *,

@@ -71,14 +71,14 @@ export function DemoCard({
   ).padStart(2, "0")}`;
 
   return (
-    <div className="bg-ink rounded-6xl flex flex-col gap-[18px] px-[26px] py-[30px] shadow-[0_26px_60px_rgba(20,25,31,.28)]">
-      <div className="text-paper flex items-center justify-between">
-        <span className="flex items-center gap-[9px] text-[13.5px]">
-          <span className="bg-accent h-[7px] w-[7px] flex-none rounded-full" />
+    <div className="border-line text-ink relative flex flex-col gap-[16px] rounded-[28px] border bg-paper p-3 shadow-[0_28px_70px_rgba(0,0,0,.32)] sm:p-4">
+      <div className="flex items-center justify-between px-2 pt-1 text-ink">
+        <span className="flex items-center gap-[9px] text-[12.5px] font-semibold">
+          <span className="bg-accent h-[7px] w-[7px] flex-none rounded-full shadow-[0_0_0_4px_rgba(201,138,62,.14)]" />
           {question.label}
         </span>
         <span
-          className="tnum text-[14px] font-bold"
+          className="tnum bg-ink rounded-full px-3 py-1.5 text-[12.5px] font-bold text-white"
           aria-label={labels.overline}
         >
           {clock}
@@ -93,16 +93,16 @@ export function DemoCard({
             className={cn(
               "h-[5px] flex-1 rounded-full transition-colors",
               i < question.nr - 1
-                ? "bg-paper"
+                ? "bg-ink"
                 : i === question.nr - 1
                   ? "bg-accent"
-                  : "bg-paper/20",
+                  : "bg-ink/10",
             )}
           />
         ))}
       </div>
 
-      <div className="bg-paper rounded-5xl flex flex-col gap-[14px] p-6">
+      <div className="border-line-soft rounded-[22px] flex flex-col gap-[14px] border bg-white p-5 sm:p-6">
         <span className="text-muted text-[11.5px] tracking-[.16em] uppercase">
           {labels.overline}
         </span>
@@ -212,7 +212,7 @@ export function DemoCard({
         </button>
       </div>
 
-      <span className="text-on-dark-muted text-center text-[13.5px]">
+      <span className="text-muted-2 pb-1 text-center text-[12.5px]">
         {labels.footnote}
       </span>
     </div>

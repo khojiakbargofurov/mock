@@ -40,6 +40,76 @@ function demoQuestion(label: string): DemoQuestion | null {
   return null;
 }
 
+const featureIcons = [
+  "clock",
+  "sound",
+  "book",
+  "cards",
+  "chart",
+  "sync",
+] as const;
+
+function FeatureIcon({ name }: { name: (typeof featureIcons)[number] }) {
+  const paths = {
+    clock: (
+      <>
+        <circle cx="12" cy="12" r="8.25" />
+        <path d="M12 7.5v5l3.25 2" />
+      </>
+    ),
+    sound: (
+      <>
+        <path d="M5 14.5H2.75v-5H5l4-3.25v11.5L5 14.5Z" />
+        <path d="M13 9.25a4 4 0 0 1 0 5.5M15.75 6.75a7.5 7.5 0 0 1 0 10.5" />
+      </>
+    ),
+    book: (
+      <>
+        <path d="M4 4.25h6.5A2.5 2.5 0 0 1 13 6.75v13H6.5A2.5 2.5 0 0 1 4 17.25v-13Z" />
+        <path d="M20 4.25h-4.5A2.5 2.5 0 0 0 13 6.75v13h4.5a2.5 2.5 0 0 0 2.5-2.5v-13Z" />
+      </>
+    ),
+    cards: (
+      <>
+        <rect x="5" y="3.5" width="14" height="17" rx="2.5" />
+        <path d="M9 8h6M9 12h6M9 16h3" />
+        <path d="M5 17.5H4a2 2 0 0 1-2-2v-10" />
+      </>
+    ),
+    chart: (
+      <>
+        <path d="M4 19.5V5.25M4 19.5h16" />
+        <path d="m7.5 15 3.25-3.25 2.75 2.25L19 7.5" />
+        <path d="M15.75 7.5H19v3.25" />
+      </>
+    ),
+    sync: (
+      <>
+        <path d="M19 8.5A7.5 7.5 0 0 0 6.25 5.75L4 8" />
+        <path d="M4 4.5V8h3.5M5 15.5a7.5 7.5 0 0 0 12.75 2.75L20 16" />
+        <path d="M20 19.5V16h-3.5" />
+      </>
+    ),
+  };
+
+  return (
+    <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-current/15 bg-current/5">
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden
+        className="h-6 w-6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {paths[name]}
+      </svg>
+    </span>
+  );
+}
+
 /**
  * Kirish sahifasi (landing).
  *
@@ -110,22 +180,30 @@ export default async function LandingPage() {
       />
 
       {/* ── Navbar ─────────────────────────────────────────────── */}
-      <header className="border-line sticky top-0 z-20 border-b bg-white/90 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-[1180px] items-center gap-8 px-6 py-[14px]">
-          <Logo />
-          <nav className="text-muted-3 hidden items-center gap-7 text-[15px] lg:flex">
-            <a href="#nima-uchun" className="hover:text-ink transition-colors">
-              {t("navWhy")}
-            </a>
-            <a href="#darajalar" className="hover:text-ink transition-colors">
-              {t("navLevels")}
-            </a>
-            <a href="#savollar" className="hover:text-ink transition-colors">
-              {t("navFaq")}
-            </a>
+      <header className="sticky top-0 z-30 border-b border-black/[.06] bg-paper/90 backdrop-blur-xl">
+        <div className="mx-auto flex w-full max-w-[1240px] items-center gap-8 px-5 py-3.5 sm:px-7">
+          <Link href="/" aria-label="prufung.uz">
+            <Logo />
+          </Link>
+          <nav className="text-muted-3 hidden items-center gap-1 rounded-full border border-black/[.06] bg-white/65 p-1 text-[14.5px] lg:flex">
+            {[
+              ["#nima-uchun", t("navWhy")],
+              ["#darajalar", t("navLevels")],
+              ["#savollar", t("navFaq")],
+            ].map(([href, label]) => (
+              <a
+                key={href}
+                href={href}
+                className="hover:bg-sand hover:text-ink rounded-full px-4 py-2 transition-colors"
+              >
+                {label}
+              </a>
+            ))}
           </nav>
           <div className="ml-auto flex items-center gap-3 sm:gap-4">
-            <LocaleSwitch compact />
+            <span className="hidden sm:inline-flex">
+              <LocaleSwitch compact />
+            </span>
             <Link
               href="/login"
               className="text-muted-3 hover:text-ink hidden text-[15px] font-semibold transition-colors sm:inline"
@@ -134,9 +212,9 @@ export default async function LandingPage() {
             </Link>
             <Link
               href="/register"
-              className="bg-ink text-paper rounded-md px-[18px] py-[11px] text-[15px] font-semibold transition-opacity hover:opacity-90"
+              className="bg-ink text-paper rounded-full px-4 py-2.5 text-[14px] font-bold shadow-sm transition-[transform,opacity] hover:-translate-y-0.5 hover:opacity-90 sm:px-5 sm:text-[14.5px]"
             >
-              {t("navStart")}
+              {t("navStart")} <span aria-hidden>↗</span>
             </Link>
           </div>
         </div>
@@ -144,84 +222,110 @@ export default async function LandingPage() {
 
       <main className="flex flex-1 flex-col">
         {/* ── Hero ─────────────────────────────────────────────── */}
-        <section className="mx-auto grid w-full max-w-[1180px] gap-14 px-6 py-16 lg:grid-cols-[minmax(0,1.05fr)_420px] lg:items-center lg:py-[76px]">
-          <div className="flex flex-col gap-6">
-            <span className="bg-sand border-line-strong text-muted-3 rounded-pill flex w-fit items-center gap-[10px] border px-4 py-2 text-[13.5px] font-semibold">
-              <span className="bg-accent h-[7px] w-[7px] flex-none rounded-full" />
-              {t("eyebrow")}
-            </span>
+        <section className="px-3 pt-3 sm:px-5 sm:pt-5">
+          <div className="landing-hero relative mx-auto w-full max-w-[1320px] overflow-hidden rounded-[28px] bg-ink text-paper sm:rounded-[38px]">
+            <span className="landing-hero-orbit" aria-hidden />
+            <span className="landing-hero-grid" aria-hidden />
 
-            <h1 className="font-display m-0 max-w-[19ch] text-[42px] leading-[1.03] font-extrabold tracking-[-.035em] lg:text-[64px]">
-              {t("h1a")} <span className="text-accent">{t("h1b")}</span>
-            </h1>
+            <div className="relative z-10 mx-auto grid w-full max-w-[1180px] grid-cols-[minmax(0,1fr)] gap-12 px-6 pt-14 pb-12 lg:grid-cols-[minmax(0,1.08fr)_430px] lg:items-center lg:gap-16 lg:px-8 lg:pt-20 lg:pb-16">
+              <div className="min-w-0 flex flex-col items-start gap-6">
+                <span className="rounded-pill flex w-fit items-center gap-[10px] border border-white/15 bg-white/[.07] px-4 py-2 text-[13.5px] font-semibold text-white/75 backdrop-blur">
+                  <span className="bg-accent h-[7px] w-[7px] flex-none rounded-full shadow-[0_0_0_5px_rgba(201,138,62,.12)]" />
+                  {t("eyebrow")}
+                </span>
 
-            <p className="text-slate m-0 max-w-[48ch] text-[18px] leading-[1.55] text-pretty lg:text-[20px]">
-              {t("lede")}
-            </p>
+                <h1 className="font-display m-0 max-w-[15ch] text-[45px] leading-[.98] font-extrabold tracking-[-.045em] text-balance sm:text-[58px] lg:text-[72px]">
+                  {t("h1a")} {" "}
+                  <span className="landing-accent-mark text-accent relative sm:whitespace-nowrap">
+                    {t("h1b")}
+                  </span>
+                </h1>
 
-            <div className="flex flex-col gap-[14px] sm:flex-row sm:flex-wrap sm:items-center">
-              <Link
-                href="/register"
-                className="bg-ink text-paper ease-out-soft rounded-xl px-8 py-[18px] text-center text-[17px] font-bold shadow-[0_12px_28px_rgba(20,25,31,.18)] transition-[transform,opacity] duration-200 hover:-translate-y-[2px] hover:opacity-95"
-              >
-                {t("ctaPrimary")}
-              </Link>
-              <Link
-                href="/uebersicht"
-                className="border-line-btn text-muted-3 hover:bg-sand rounded-xl border-[1.5px] px-7 py-[18px] text-center text-[17px] font-semibold transition-colors"
-              >
-                {t("ctaSecondary")}
-              </Link>
+                <p className="text-on-dark-soft m-0 max-w-[50ch] text-[17px] leading-[1.6] text-pretty lg:text-[19px]">
+                  {t("lede")}
+                </p>
+
+                <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
+                  <Link
+                    href="/register"
+                    className="bg-accent text-ink ease-out-soft rounded-xl px-8 py-[17px] text-center text-[16.5px] font-extrabold shadow-[0_14px_34px_rgba(0,0,0,.24)] transition-[transform,box-shadow] duration-200 hover:-translate-y-[2px] hover:shadow-[0_18px_38px_rgba(0,0,0,.3)]"
+                  >
+                    {t("ctaPrimary")} <span aria-hidden>→</span>
+                  </Link>
+                  <Link
+                    href="/uebersicht"
+                    className="rounded-xl border border-white/20 bg-white/[.05] px-7 py-[17px] text-center text-[16.5px] font-semibold text-white transition-colors hover:bg-white/10"
+                  >
+                    {t("ctaSecondary")}
+                  </Link>
+                </div>
+
+                <span className="flex items-start gap-2 text-[13.5px] leading-[1.45] text-white/45">
+                  <span className="mt-[3px] text-accent" aria-hidden>✓</span>
+                  {t("ctaNote")}
+                </span>
+              </div>
+
+              {demo && (
+                <div className="landing-demo relative mx-auto min-w-0 w-full max-w-[430px] lg:mx-0">
+                  <span className="absolute -inset-3 translate-x-4 translate-y-4 rotate-[2.5deg] rounded-[30px] border border-white/10 bg-white/[.045]" aria-hidden />
+                  <DemoCard
+                    question={demo}
+                    labels={{
+                      overline: t("demoOverline"),
+                      pick: t("demoPick"),
+                      next: t("demoNext"),
+                      right: t("demoRight"),
+                      wrong: t("demoWrong"),
+                      footnote: t("demoFootnote"),
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
-            <span className="text-muted-2 text-[14.5px]">{t("ctaNote")}</span>
-
-            <dl className="border-line-strong m-0 grid grid-cols-2 gap-x-6 gap-y-6 border-t pt-7 lg:grid-cols-4">
-              {stats.map(([value, label]) => (
-                <div key={value} className="flex flex-col gap-1">
-                  <dt className="font-display tnum order-1 text-[27px] leading-none font-bold tracking-[-.02em]">
-                    {t(value)}
+            <dl className="relative z-10 mx-auto grid w-full max-w-[1180px] grid-cols-2 border-t border-white/10 px-6 lg:grid-cols-4 lg:px-8">
+              {stats.map(([value, label], index) => (
+                <div
+                  key={value}
+                  className={cn(
+                    "flex flex-col gap-2 py-6 pr-5 sm:py-7 lg:px-7",
+                    index % 2 === 1 && "border-l border-white/10 pl-5",
+                    index > 1 && "border-t border-white/10 lg:border-t-0",
+                    index > 0 && "lg:border-l lg:border-white/10",
+                    index === 0 && "lg:pl-0",
+                  )}
+                >
+                  <dt className="font-display tnum order-1 text-[30px] leading-none font-extrabold tracking-[-.03em] text-white lg:text-[34px]">
+                    {t(value)}<span className="text-accent">+</span>
                   </dt>
-                  <dd className="text-muted order-2 m-0 text-[13.5px] leading-[1.4]">
+                  <dd className="order-2 m-0 max-w-[22ch] text-[12.5px] leading-[1.4] text-white/45 sm:text-[13px]">
                     {t(label)}
                   </dd>
                 </div>
               ))}
             </dl>
           </div>
-
-          {demo && (
-            <DemoCard
-              question={demo}
-              labels={{
-                overline: t("demoOverline"),
-                pick: t("demoPick"),
-                next: t("demoNext"),
-                right: t("demoRight"),
-                wrong: t("demoWrong"),
-                footnote: t("demoFootnote"),
-              }}
-            />
-          )}
         </section>
 
         {/* ── Format manbasi ───────────────────────────────────── */}
-        <section className="border-line border-y bg-white">
+        <section className="bg-paper py-2">
           <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-6 px-6 py-7 lg:flex-row lg:items-center lg:gap-10">
-            <span className="text-muted-2 flex-none text-[12px] tracking-[.16em] uppercase lg:max-w-[10ch] lg:leading-[1.5]">
+            <span className="text-muted-2 flex flex-none items-center gap-2 text-[11.5px] font-bold tracking-[.16em] uppercase lg:max-w-[12ch] lg:leading-[1.5]">
+              <span className="bg-accent h-1.5 w-1.5 rounded-full" aria-hidden />
               {t("proofOverline")}
             </span>
-            <div className="grid flex-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
+            <div className="grid flex-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
               {formats.map((spec) => (
                 <div
                   key={spec.format}
-                  className="border-line-soft flex flex-col gap-[3px] lg:border-l lg:px-7"
+                  className="border-line-soft flex flex-col gap-[3px] rounded-xl border bg-white/60 px-4 py-3.5"
                 >
-                  <span className="text-[15.5px] font-bold tracking-[-.01em]">
+                  <span className="text-[14.5px] font-bold tracking-[-.01em]">
                     {spec.provider === "goethe" ? "Goethe-Institut" : "telc"} ·{" "}
                     {spec.level}
                   </span>
-                  <span className="text-muted text-[13.5px] leading-[1.45]">
+                  <span className="text-muted text-[12.5px] leading-[1.45]">
                     {t("formatMeta", {
                       modules: spec.modules.length,
                       points: spec.totalPoints,
@@ -237,37 +341,62 @@ export default async function LandingPage() {
         {/* ── Nima uchun (imkoniyatlar) ────────────────────────── */}
         <section
           id="nima-uchun"
-          className="scroll-mt-20 bg-white pb-16 lg:pb-20"
+          className="scroll-mt-20 bg-white py-14 lg:py-24"
         >
-          <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-9 px-6">
+          <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-10 px-6">
             <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
-              <h2 className="font-display m-0 max-w-[22ch] text-[30px] leading-[1.12] font-bold tracking-[-.028em] lg:text-[40px]">
-                {t("featuresTitle")}
-              </h2>
+              <div className="flex flex-col gap-4">
+                <span className="text-accent text-[11.5px] font-extrabold tracking-[.18em] uppercase">
+                  {t("featuresOverline")}
+                </span>
+                <h2 className="font-display m-0 max-w-[18ch] text-[34px] leading-[1.05] font-extrabold tracking-[-.035em] lg:text-[48px]">
+                  {t("featuresTitle")}
+                </h2>
+              </div>
               <p className="text-muted-3 m-0 max-w-[38ch] text-[16.5px] leading-[1.6] text-pretty">
                 {t("featuresBody")}
               </p>
             </div>
 
-            <div className="grid gap-[18px] md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-12">
               {features.map((key, i) => (
                 <div
                   key={key}
                   className={cn(
-                    "bg-paper border-line rounded-4xl flex flex-col gap-[14px] border px-7 py-[30px]",
-                    "ease-out-soft transition-[box-shadow,transform] duration-200",
-                    "hover:shadow-card hover:-translate-y-[3px]",
+                    "group relative min-h-[220px] overflow-hidden rounded-[26px] border p-6 lg:p-8",
+                    "ease-out-soft transition-[box-shadow,transform] duration-300 hover:-translate-y-1 hover:shadow-card",
+                    i === 0 && "border-ink bg-ink text-white lg:col-span-7",
+                    i === 1 && "border-line bg-paper lg:col-span-5",
+                    i > 1 && i < 5 && "border-line bg-white lg:col-span-4",
+                    i === 5 && "border-line-strong bg-sand lg:col-span-12 lg:min-h-[190px]",
                   )}
                 >
-                  <span className="font-display text-accent text-[15px] font-bold tracking-[.06em]">
+                  <span
+                    className={cn(
+                      "absolute right-5 bottom-1 font-display text-[84px] leading-none font-extrabold tracking-[-.07em] transition-transform duration-300 group-hover:-translate-y-1",
+                      i === 0 ? "text-white/[.045]" : "text-ink/[.035]",
+                    )}
+                    aria-hidden
+                  >
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="font-display text-[22px] leading-[1.22] font-bold tracking-[-.015em]">
-                    {t(`${key}Title`)}
-                  </span>
-                  <span className="text-muted-3 text-[16px] leading-[1.6] text-pretty">
-                    {t(`${key}Body`)}
-                  </span>
+                  <div className={cn("relative z-10 flex h-full flex-col", i === 5 && "lg:flex-row lg:items-end lg:gap-10")}>
+                    <div className="flex flex-1 flex-col gap-5">
+                      <FeatureIcon name={featureIcons[i]} />
+                      <span className="font-display text-[24px] leading-[1.15] font-bold tracking-[-.02em] lg:text-[27px]">
+                        {t(`${key}Title`)}
+                      </span>
+                    </div>
+                    <span
+                      className={cn(
+                        "mt-4 max-w-[46ch] text-[15.5px] leading-[1.6] text-pretty",
+                        i === 0 ? "text-white/60" : "text-muted-3",
+                        i === 5 && "lg:mt-0 lg:text-[17px]",
+                      )}
+                    >
+                      {t(`${key}Body`)}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -275,63 +404,73 @@ export default async function LandingPage() {
         </section>
 
         {/* ── Qanday ishlaydi ──────────────────────────────────── */}
-        <section className="mx-auto grid w-full max-w-[1180px] gap-12 px-6 py-16 lg:grid-cols-[380px_minmax(0,1fr)] lg:items-center lg:py-20">
-          <div className="flex flex-col gap-4">
-            <span className="text-muted text-[12px] tracking-[.18em] uppercase">
-              {t("howOverline")}
-            </span>
-            <h2 className="font-display m-0 text-[30px] leading-[1.1] font-bold tracking-[-.028em] lg:text-[36px]">
-              {t("howTitle")}
-            </h2>
-            <p className="text-muted-3 m-0 max-w-[40ch] text-[16.5px] leading-[1.6] text-pretty">
-              {t("howBody")}
-            </p>
-            <Link
-              href="/register"
-              className="bg-accent text-ink ease-out-soft mt-2 w-fit rounded-lg px-7 py-[17px] text-[16px] font-bold transition-[transform,opacity] duration-200 hover:-translate-y-[2px] hover:opacity-95"
-            >
-              {t("ctaPrimary")}
-            </Link>
-          </div>
+        <section className="bg-paper px-3 py-3 sm:px-5">
+          <div className="mx-auto w-full max-w-[1320px] overflow-hidden rounded-[28px] border border-black/[.06] bg-sand/55 sm:rounded-[38px]">
+            <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-10 px-6 py-14 lg:py-20">
+              <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                <div className="flex flex-col gap-4">
+                  <span className="text-muted text-[11.5px] font-bold tracking-[.18em] uppercase">
+                    {t("howOverline")}
+                  </span>
+                  <h2 className="font-display m-0 max-w-[17ch] text-[34px] leading-[1.05] font-extrabold tracking-[-.035em] lg:text-[46px]">
+                    {t("howTitle")}
+                  </h2>
+                </div>
+                <p className="text-muted-3 m-0 max-w-[42ch] text-[16.5px] leading-[1.6] text-pretty">
+                  {t("howBody")}
+                </p>
+              </div>
 
-          <ol className="m-0 flex list-none flex-col gap-3 p-0">
-            {steps.map((key, i) => (
-              <li
-                key={key}
-                className="border-line rounded-3xl flex items-center gap-[22px] border bg-white px-7 py-6"
+              <ol className="landing-steps m-0 grid list-none gap-3 p-0 lg:grid-cols-3">
+                {steps.map((key, i) => (
+                  <li
+                    key={key}
+                    className="border-line group relative flex min-h-[205px] flex-col overflow-hidden rounded-[24px] border bg-white p-6 shadow-[0_1px_0_rgba(20,25,31,.03)] lg:p-7"
+                  >
+                    <span className="bg-accent/15 text-ink font-display flex h-[42px] w-[42px] items-center justify-center rounded-full text-[16px] font-extrabold">
+                      0{i + 1}
+                    </span>
+                    <span className="mt-auto flex flex-col gap-2 pt-8 lg:pt-10">
+                      <span className="font-display text-[22px] leading-[1.18] font-bold">
+                        {t(`${key}Title`)}
+                      </span>
+                      <span className="text-muted-3 text-[15.5px] leading-[1.55]">
+                        {t(`${key}Body`)}
+                      </span>
+                    </span>
+                    <span className="absolute top-[47px] left-[69px] hidden h-px w-[calc(100%-58px)] bg-line lg:block" aria-hidden />
+                  </li>
+                ))}
+              </ol>
+
+              <Link
+                href="/register"
+                className="bg-ink text-paper ease-out-soft mx-auto rounded-full px-8 py-[15px] text-[16px] font-bold transition-[transform,opacity] duration-200 hover:-translate-y-[2px] hover:opacity-95"
               >
-                <span className="bg-ink text-paper font-display flex h-[44px] w-[44px] flex-none items-center justify-center rounded-lg text-[19px] font-bold">
-                  {i + 1}
-                </span>
-                <span className="flex flex-col gap-1">
-                  <span className="text-[19px] font-bold">
-                    {t(`${key}Title`)}
-                  </span>
-                  <span className="text-muted-3 text-[16px] leading-[1.5]">
-                    {t(`${key}Body`)}
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ol>
+                {t("ctaPrimary")} <span aria-hidden>→</span>
+              </Link>
+            </div>
+          </div>
         </section>
 
         {/* ── Darajalar ────────────────────────────────────────── */}
-        <section id="darajalar" className="bg-sand scroll-mt-20">
-          <div className="mx-auto grid w-full max-w-[1180px] gap-12 px-6 py-16 lg:grid-cols-[minmax(0,1fr)_560px] lg:items-center lg:py-20">
-            <div className="flex flex-col gap-5">
-              <span className="text-muted text-[12px] tracking-[.18em] uppercase">
-                {t("formatsOverline")}
-              </span>
-              <h2 className="font-display m-0 max-w-[24ch] text-[30px] leading-[1.1] font-bold tracking-[-.028em] lg:text-[36px]">
-                {t("formatsTitle")}
-              </h2>
-              <p className="text-muted-3 m-0 max-w-[44ch] text-[16.5px] leading-[1.6] text-pretty">
+        <section id="darajalar" className="scroll-mt-20 bg-white py-14 lg:py-24">
+          <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-10 px-6">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+              <div className="flex flex-col gap-4">
+                <span className="text-accent text-[11.5px] font-extrabold tracking-[.18em] uppercase">
+                  {t("formatsOverline")}
+                </span>
+                <h2 className="font-display m-0 max-w-[22ch] text-[34px] leading-[1.05] font-extrabold tracking-[-.035em] lg:text-[46px]">
+                  {t("formatsTitle")}
+                </h2>
+              </div>
+              <p className="text-muted-3 m-0 max-w-[50ch] text-[16.5px] leading-[1.6] text-pretty">
                 {t("formatsBody")}
               </p>
             </div>
 
-            <div className="grid gap-[14px] sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {formats.map((spec) => {
                 const variants = EXAM_SETS.filter(
                   (set) => set.format === spec.format,
@@ -341,37 +480,45 @@ export default async function LandingPage() {
                     key={spec.format}
                     href="/pruefung"
                     className={cn(
-                      "rounded-4xl flex flex-col justify-between gap-6 border px-[26px] py-7",
-                      "ease-out-soft transition-[box-shadow,transform] duration-200",
-                      "hover:shadow-card hover:-translate-y-[3px]",
-                      spec.level === "B2"
-                        ? "bg-ink border-ink text-on-dark"
-                        : "border-line-strong bg-white",
+                      "group rounded-[26px] flex min-h-[270px] flex-col justify-between overflow-hidden border p-6",
+                      "ease-out-soft transition-[box-shadow,transform] duration-300 hover:-translate-y-1 hover:shadow-card",
+                      spec.level === "A1" && "border-lvl-a1-bd bg-lvl-a1",
+                      spec.level === "A2" && "border-lvl-a2-bd bg-lvl-a2",
+                      spec.level === "B1" && "border-lvl-b1-bd bg-lvl-b1",
+                      spec.level === "B2" && "border-ink bg-ink text-on-dark",
                     )}
                   >
-                    <span className="flex flex-col gap-[5px]">
-                      <span className="font-display text-[32px] leading-none font-extrabold tracking-[-.02em]">
+                    <span className="flex items-start justify-between">
+                      <span className="font-display text-[54px] leading-none font-extrabold tracking-[-.055em]">
                         {spec.level}
                       </span>
                       <span
                         className={cn(
-                          "text-[14px]",
+                          "flex h-10 w-10 items-center justify-center rounded-full border text-[18px] transition-transform duration-300 group-hover:translate-x-1",
                           spec.level === "B2"
-                            ? "text-on-dark-soft"
-                            : "text-muted-2",
+                            ? "border-white/15 text-white"
+                            : "border-ink/10 text-ink",
                         )}
                       >
-                        {spec.provider === "goethe" ? "Goethe-Institut" : "telc"}
+                        ↗
                       </span>
                     </span>
                     <span className="flex flex-col gap-3">
+                      <span
+                        className={cn(
+                          "text-[14px] font-bold",
+                          spec.level === "B2" ? "text-on-dark-soft" : "text-muted-3",
+                        )}
+                      >
+                        {spec.provider === "goethe" ? "Goethe-Institut" : "telc"} · {variants}×
+                      </span>
                       <span className="flex gap-[5px]" aria-hidden>
                         {spec.modules.map((m) => (
                           <span
                             key={m.id}
                             className={cn(
-                              "h-[5px] flex-1 rounded-full",
-                              spec.level === "B2" ? "bg-paper" : "bg-ink",
+                              "h-[4px] flex-1 rounded-full",
+                              spec.level === "B2" ? "bg-accent" : "bg-ink/75",
                             )}
                           />
                         ))}
@@ -383,9 +530,8 @@ export default async function LandingPage() {
                             ? "text-on-dark-muted"
                             : "text-muted",
                         )}
-                      >
-                        {spec.modules.map((m) => m.label).join(" · ")} ·{" "}
-                        {variants}×
+                        >
+                        {spec.modules.map((m) => m.label).join(" · ")}
                       </span>
                     </span>
                   </Link>
@@ -396,56 +542,61 @@ export default async function LandingPage() {
         </section>
 
         {/* ── Savollar ─────────────────────────────────────────── */}
-        <section id="savollar" className="scroll-mt-20 bg-white">
-          <div className="mx-auto grid w-full max-w-[1180px] gap-12 px-6 py-16 lg:grid-cols-[360px_minmax(0,1fr)] lg:py-20">
+        <section id="savollar" className="scroll-mt-20 bg-paper">
+          <div className="mx-auto grid w-full max-w-[1180px] gap-10 px-6 py-14 lg:grid-cols-[360px_minmax(0,1fr)] lg:py-24">
             <div className="flex flex-col gap-4">
-              <span className="text-muted text-[12px] tracking-[.18em] uppercase">
+              <span className="text-accent text-[11.5px] font-extrabold tracking-[.18em] uppercase">
                 {t("faqOverline")}
               </span>
-              <h2 className="font-display m-0 text-[30px] leading-[1.12] font-bold tracking-[-.028em] lg:text-[34px]">
+              <h2 className="font-display m-0 text-[34px] leading-[1.06] font-extrabold tracking-[-.035em] lg:text-[44px]">
                 {t("faqTitle")}
               </h2>
-              <div className="bg-paper border-line rounded-3xl mt-2 flex flex-col gap-2 px-[22px] py-5">
+              <div className="bg-ink text-paper rounded-[22px] mt-3 flex flex-col gap-2 px-6 py-6 shadow-card">
                 <span className="text-[15.5px] font-bold tracking-[-.01em]">
                   {t("faqContactTitle")}
                 </span>
-                <span className="text-muted-3 text-[15px] leading-[1.55]">
+                <span className="text-on-dark-soft text-[15px] leading-[1.55]">
                   {t("faqContactBody")}
                 </span>
                 <Link
                   href="/login"
-                  className="text-petrol hover:text-accent mt-[2px] text-[15px] font-semibold transition-colors"
+                  className="text-accent mt-2 text-[15px] font-bold transition-opacity hover:opacity-80"
                 >
                   {t("faqContactCta")} →
                 </Link>
               </div>
             </div>
 
-            <dl className="m-0 flex flex-col">
-              {faq.map((key) => (
-                <div
+            <div className="flex flex-col gap-3">
+              {faq.map((key, index) => (
+                <details
                   key={key}
-                  className="border-line-soft flex flex-col gap-[9px] border-b py-6"
+                  open={index === 0}
+                  className="landing-faq border-line group rounded-[22px] border bg-white px-6 py-1"
                 >
-                  <dt className="text-[20px] font-bold tracking-[-.01em]">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-5 py-5 text-[19px] font-bold tracking-[-.01em] marker:hidden">
                     {t(`${key}Q`)}
-                  </dt>
-                  <dd className="text-muted-3 m-0 max-w-[64ch] text-[16.5px] leading-[1.6] text-pretty">
+                    <span className="bg-sand font-display flex h-8 w-8 flex-none items-center justify-center rounded-full text-[21px] font-normal transition-transform duration-200 group-open:rotate-45" aria-hidden>
+                      +
+                    </span>
+                  </summary>
+                  <p className="text-muted-3 m-0 max-w-[64ch] border-t border-line-soft pt-4 pb-5 text-[16px] leading-[1.65] text-pretty">
                     {t(`${key}A`)}
-                  </dd>
-                </div>
+                  </p>
+                </details>
               ))}
-            </dl>
+            </div>
           </div>
         </section>
 
         {/* ── Yakuniy chaqiruv ─────────────────────────────────── */}
-        <section className="bg-ink text-on-dark">
-          <div className="mx-auto flex w-full max-w-[1180px] flex-col items-center gap-6 px-6 py-20 text-center lg:py-24">
+        <section className="bg-paper px-3 pb-3 sm:px-5 sm:pb-5">
+          <div className="landing-final relative mx-auto w-full max-w-[1320px] overflow-hidden rounded-[28px] bg-ink text-on-dark sm:rounded-[38px]">
+          <div className="relative z-10 mx-auto flex w-full max-w-[1180px] flex-col items-center gap-6 px-6 py-20 text-center lg:py-28">
             <span className="text-on-dark-muted text-[12px] tracking-[.18em] uppercase">
               {t("finalOverline")}
             </span>
-            <h2 className="font-display m-0 max-w-[24ch] text-[32px] leading-[1.08] font-extrabold tracking-[-.032em] lg:text-[52px]">
+            <h2 className="font-display m-0 max-w-[19ch] text-[38px] leading-[1.02] font-extrabold tracking-[-.04em] lg:text-[62px]">
               {t("finalTitle")}
             </h2>
             <p className="text-on-dark-soft m-0 max-w-[52ch] text-[17px] leading-[1.6] text-pretty lg:text-[18px]">
@@ -454,13 +605,13 @@ export default async function LandingPage() {
             <div className="flex w-full flex-col gap-[14px] pt-2 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center">
               <Link
                 href="/register"
-                className="bg-accent text-ink ease-out-soft rounded-xl px-9 py-[20px] text-center text-[17.5px] font-bold transition-[transform,opacity] duration-200 hover:-translate-y-[2px] hover:opacity-95"
+                className="bg-accent text-ink ease-out-soft rounded-full px-9 py-[19px] text-center text-[17px] font-extrabold transition-[transform,opacity] duration-200 hover:-translate-y-[2px] hover:opacity-95"
               >
                 {t("finalCta")}
               </Link>
               <Link
                 href="/uebersicht"
-                className="text-paper rounded-xl border-[1.5px] border-white/25 px-8 py-[20px] text-center text-[17.5px] font-semibold transition-colors hover:bg-white/10"
+                className="text-paper rounded-full border border-white/20 px-8 py-[19px] text-center text-[17px] font-semibold transition-colors hover:bg-white/10"
               >
                 {t("ctaSecondary")}
               </Link>
@@ -468,6 +619,7 @@ export default async function LandingPage() {
             <span className="text-on-dark-dim text-[14.5px]">
               {t("finalNote")}
             </span>
+          </div>
           </div>
         </section>
       </main>
