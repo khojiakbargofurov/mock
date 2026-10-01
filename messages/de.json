@@ -336,6 +336,11 @@
     "guestTitle": "Sie arbeiten als Gast",
     "guestBody": "Ihre Ergebnisse liegen nur in diesem Browser. Mit Telegram werden sie mit Ihrem Konto verknüpft.",
     "privacy": "Datenschutz",
+    "shellEyebrow": "Goethe · telc · A1–B2",
+    "shellTitle": "Ergebnisse und Lernplan immer dabei.",
+    "shellBody": "Einmal anmelden — Prüfungsergebnisse, Fehler und Wortschatz bleiben auf allen Geräten synchron.",
+    "shellStat1": "vollständige Prüfungssätze",
+    "shellStat2": "Aufgaben mit Erklärung",
     "backToApp": "Zur App →"
   },
   "sync": {

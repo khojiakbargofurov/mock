@@ -307,6 +307,38 @@
   }
 }
 
+/* Auth sahifalari — landingdagi qoramtir imtihon panelining davomi. */
+.auth-shell {
+  background-image:
+    radial-gradient(circle at 10% 12%, rgba(15, 107, 120, 0.2), transparent 26rem),
+    radial-gradient(circle at 88% 80%, rgba(201, 138, 62, 0.16), transparent 28rem),
+    linear-gradient(135deg, #171d24 0%, #101419 68%, #16191e 100%);
+}
+
+.auth-shell-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.1;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 58px 58px;
+  mask-image: linear-gradient(110deg, black, transparent 72%);
+}
+
+.auth-shell-orbit {
+  position: absolute;
+  width: 42rem;
+  height: 42rem;
+  right: -22rem;
+  bottom: -20rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  box-shadow:
+    0 0 0 6rem rgba(255, 255, 255, 0.014),
+    0 0 0 12rem rgba(255, 255, 255, 0.009);
+}
+
 /* Harakatni kamaytirish sozlamasini hurmat qilamiz */
 @media (prefers-reduced-motion: reduce) {
   *,

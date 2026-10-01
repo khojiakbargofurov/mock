@@ -336,6 +336,11 @@
     "guestTitle": "Siz mehmon sifatida ishlayapsiz",
     "guestBody": "Natijalar faqat shu brauzerda saqlanmoqda. Telegram orqali kirsangiz, ular hisobingizga bog‘lanadi.",
     "privacy": "Maxfiylik siyosati",
+    "shellEyebrow": "Goethe · telc · A1–B2",
+    "shellTitle": "Natijangiz ham, rejangiz ham siz bilan.",
+    "shellBody": "Bir marta kiring — imtihon natijalari, xatolar va so‘zlar barcha qurilmalaringizda saqlanadi.",
+    "shellStat1": "to‘liq imtihon varianti",
+    "shellStat2": "izohli topshiriq",
     "backToApp": "Ilovaga qaytish →"
   },
   "sync": {

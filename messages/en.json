@@ -336,6 +336,11 @@
     "guestTitle": "You're working as a guest",
     "guestBody": "Your results live in this browser only. Sign in with Telegram to link them to your account.",
     "privacy": "Privacy policy",
+    "shellEyebrow": "Goethe · telc · A1–B2",
+    "shellTitle": "Your results and your plan, always with you.",
+    "shellBody": "Sign in once — your exam results, mistakes and vocabulary stay synced across devices.",
+    "shellStat1": "complete exam sets",
+    "shellStat2": "explained exam items",
     "backToApp": "Back to the app →"
   },
   "sync": {

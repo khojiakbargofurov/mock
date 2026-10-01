@@ -45,14 +45,19 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex flex-col gap-5">
-      <Card className="flex flex-col gap-6 px-8 py-9">
-        <div className="flex flex-col gap-2">
-          <Overline>{t("registerOverline")}</Overline>
-          <h1 className="font-display m-0 text-[30px] leading-[1.15] font-bold">
+    <div className="text-ink flex flex-col gap-5">
+      <Card className="flex flex-col gap-7 rounded-[30px] border-white/50 bg-paper px-7 py-8 shadow-[0_30px_90px_rgba(0,0,0,.3)] sm:px-9 sm:py-10">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <Overline className="text-accent">{t("registerOverline")}</Overline>
+            <span className="border-line flex h-10 w-10 items-center justify-center rounded-full border bg-white text-[17px]" aria-hidden>
+              +
+            </span>
+          </div>
+          <h1 className="font-display m-0 max-w-[13ch] text-[34px] leading-[1.04] font-extrabold tracking-[-.035em] sm:text-[38px]">
             {current ? t("setupTitle") : t("registerTitle")}
           </h1>
-          <p className="text-muted-3 m-0 text-[15.5px] leading-[1.6]">
+          <p className="text-muted-3 m-0 max-w-[40ch] text-[15.5px] leading-[1.55]">
             {current
               ? t("setupBody", { name: current.firstName })
               : t("registerBody")}
@@ -65,11 +70,11 @@ export default function RegisterPage() {
               onSuccess={onSuccess}
               labelStart={t("registerWithTelegram")}
             />
-            <ul className="text-muted-3 m-0 flex list-none flex-col gap-[10px] p-0 text-[14.5px]">
+            <ul className="border-line-soft text-muted-3 m-0 flex list-none flex-col gap-0 rounded-[20px] border bg-white/70 p-1 text-[13.5px]">
               {(["benefit1", "benefit2", "benefit3"] as const).map((key) => (
-                <li key={key} className="flex gap-3">
-                  <span className="text-accent font-bold">·</span>
-                  {t(key)}
+                <li key={key} className="border-line-soft flex items-start gap-3 border-b px-3 py-3 last:border-b-0">
+                  <span className="bg-accent/15 text-ink flex h-5 w-5 flex-none items-center justify-center rounded-full text-[11px] font-bold">✓</span>
+                  <span className="leading-[1.45]">{t(key)}</span>
                 </li>
               ))}
             </ul>
@@ -80,7 +85,7 @@ export default function RegisterPage() {
               <span className="text-[15px] font-semibold">
                 {t("targetLevel")}
               </span>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {LEVELS.map((value) => (
                   <button
                     key={value}
@@ -88,9 +93,9 @@ export default function RegisterPage() {
                     aria-pressed={level === value}
                     onClick={() => setLevel(value)}
                     className={cn(
-                      "flex flex-col items-start gap-[2px] rounded-2xl border px-[18px] py-3 transition-colors",
+                      "flex flex-col items-start gap-[2px] rounded-2xl border px-4 py-3 transition-[border-color,background-color,transform] hover:-translate-y-0.5",
                       level === value
-                        ? "border-ink bg-sand"
+                        ? "border-accent bg-sand shadow-[inset_0_0_0_1px_var(--color-accent)]"
                         : "border-line hover:border-line-hover bg-white",
                     )}
                   >
@@ -113,23 +118,23 @@ export default function RegisterPage() {
                 type="date"
                 value={examDate}
                 onChange={(e) => setExamDate(e.target.value)}
-                className="border-line-btn focus:border-ink rounded-lg border bg-white px-[14px] py-[12px] text-[16px] outline-none transition-colors"
+                className="border-line-btn focus:border-accent rounded-xl border bg-white px-4 py-[14px] text-[16px] outline-none transition-[border-color,box-shadow] focus:ring-4 focus:ring-[color-mix(in_srgb,var(--color-accent)_16%,transparent)]"
               />
               <span className="text-muted-2 text-[13.5px]">
                 {t("examDateHint")}
               </span>
             </label>
 
-            <Button size="lg" fullWidth onClick={finish}>
+            <Button variant="accent" size="lg" fullWidth onClick={finish} className="rounded-xl font-bold">
               {t("finish")}
             </Button>
           </div>
         )}
       </Card>
 
-      <span className="text-muted-2 text-center text-[14.5px]">
+      <span className="text-center text-[14.5px] text-white/45">
         {t("haveAccount")}{" "}
-        <Link href="/login" className="text-petrol font-semibold">
+        <Link href="/login" className="text-accent font-bold hover:underline">
           {t("toLogin")}
         </Link>
       </span>

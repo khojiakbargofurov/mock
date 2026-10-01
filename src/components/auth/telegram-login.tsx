@@ -116,7 +116,7 @@ export function TelegramLogin({
   if (phase === "waiting" || phase === "done") {
     return (
       <div className="flex flex-col gap-5">
-        <div className="border-line rounded-3xl flex items-center gap-4 border bg-white px-5 py-4">
+        <div className="border-line rounded-[20px] flex items-center gap-4 border bg-white px-5 py-4">
           {phase === "done" ? (
             <span className="bg-ok-bg text-ok-fg flex h-10 w-10 flex-none items-center justify-center rounded-full text-[18px]">
               ✓
@@ -144,7 +144,7 @@ export function TelegramLogin({
               href={link}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-ink text-paper rounded-lg px-6 py-[14px] text-[15px] font-semibold transition-opacity hover:opacity-90"
+              className="bg-accent text-ink rounded-xl px-6 py-[14px] text-[15px] font-bold transition-[transform,opacity] hover:-translate-y-0.5 hover:opacity-90"
             >
               {t("openTelegram")}
             </a>
@@ -164,17 +164,20 @@ export function TelegramLogin({
   return (
     <div className="flex flex-col gap-3">
       <Button
+        variant="accent"
         size="lg"
         fullWidth
         onClick={start}
         disabled={phase === "starting"}
         className={cn(
-          "flex items-center justify-center gap-3",
+          "flex items-center justify-center gap-3 rounded-xl font-bold shadow-[0_12px_28px_rgba(201,138,62,.18)] hover:-translate-y-0.5",
           phase === "starting" && "opacity-80",
         )}
       >
-        <span aria-hidden className="text-[18px]">
-          ✈
+        <span aria-hidden className="flex h-7 w-7 items-center justify-center rounded-full bg-ink/10">
+          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
+            <path d="M20.7 3.4 2.8 10.3c-1.2.5-1.2 1.1-.2 1.4l4.6 1.4 1.7 5.2c.2.6.1.9.8.9.5 0 .8-.2 1-.4l2.2-2.1 4.6 3.4c.9.5 1.5.2 1.7-.8l3-14.2c.3-1.2-.5-1.8-1.5-1.4Zm-2.2 3.2-8.3 7.5-.3 3.1-1.6-5 9.6-6.1c.5-.3.9-.1.6.5Z" />
+          </svg>
         </span>
         {phase === "starting" ? t("starting") : (labelStart ?? t("loginWithTelegram"))}
       </Button>
