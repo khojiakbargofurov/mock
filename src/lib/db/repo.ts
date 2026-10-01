@@ -103,12 +103,12 @@ export async function dbCreateLoginRequest(token: string): Promise<boolean> {
 export async function dbApproveLoginRequest(
   token: string,
   user: SessionUser,
-): Promise<boolean> {
+): Promise<boolean | null> {
   const client = db();
-  if (!client) return false;
+  if (!client) return null;
 
   const saved = await upsertUser(user);
-  if (!saved) return false;
+  if (!saved) return null;
 
   const { data, error } = await client
     .from("login_requests")
@@ -119,7 +119,7 @@ export async function dbApproveLoginRequest(
 
   if (error) {
     console.error("[db] approveLoginRequest:", error.message);
-    return false;
+    return null;
   }
   return (data?.length ?? 0) > 0;
 }
@@ -130,12 +130,16 @@ export async function dbLoginStatus(
   const client = db();
   if (!client) return null;
 
-  const { data } = await client
+  const { data, error } = await client
     .from("login_requests")
     .select("created_at, approved_user_id")
     .eq("token", token)
     .maybeSingle<{ created_at: string; approved_user_id: string | null }>();
 
+  if (error) {
+    console.error("[db] loginStatus:", error.message);
+    return null;
+  }
   if (!data) return "unknown";
   if (data.approved_user_id) return "approved";
 

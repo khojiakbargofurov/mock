@@ -47,19 +47,25 @@ function prune() {
   }
 }
 
-export async function createLoginRequest(): Promise<{
+export async function createLoginRequest(
+  flow: "login" | "register" = "login",
+): Promise<{
   token: string;
   expiresIn: number;
+  shared: boolean;
 }> {
-  const token = crypto.randomBytes(16).toString("base64url");
+  // Bot fallback oqimida foydalanuvchini ro'yxatdan o'tish sozlamalariga
+  // qaytarish uchun tokenning o'zida zararsiz flow belgisi bor.
+  const prefix = flow === "register" ? "r_" : "l_";
+  const token = `${prefix}${crypto.randomBytes(16).toString("base64url")}`;
 
   if (dbReady() && (await dbCreateLoginRequest(token))) {
-    return { token, expiresIn: LOGIN_REQUEST_TTL_SEC };
+    return { token, expiresIn: LOGIN_REQUEST_TTL_SEC, shared: true };
   }
 
   prune();
   memory.requests.set(token, { token, createdAt: Date.now() });
-  return { token, expiresIn: LOGIN_REQUEST_TTL_SEC };
+  return { token, expiresIn: LOGIN_REQUEST_TTL_SEC, shared: false };
 }
 
 /** Bot tomonidan tasdiqlash. Token noto'g'ri yoki eskirgan bo'lsa false. */
@@ -67,7 +73,10 @@ export async function approveLoginRequest(
   token: string,
   user: SessionUser,
 ): Promise<boolean> {
-  if (dbReady()) return dbApproveLoginRequest(token, user);
+  if (dbReady()) {
+    const approved = await dbApproveLoginRequest(token, user);
+    if (approved !== null) return approved;
+  }
 
   prune();
   const request = memory.requests.get(token);
@@ -105,7 +114,10 @@ export async function loginStatus(token: string): Promise<LoginStatus> {
 export async function takeApprovedUser(
   token: string,
 ): Promise<SessionUser | null> {
-  if (dbReady()) return dbTakeApprovedUser(token);
+  if (dbReady()) {
+    const user = await dbTakeApprovedUser(token);
+    if (user) return user;
+  }
 
   const request = memory.requests.get(token);
   if (!request?.user) return null;

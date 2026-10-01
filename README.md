@@ -48,6 +48,7 @@ u holda ma'lumot faqat brauzerda saqlanadi.
 | `TELEGRAM_BOT_USERNAME` | Bot username'i — kirish havolasi shundan yasaladi |
 | `TELEGRAM_WEBHOOK_SECRET` | Webhook so'rovi haqiqiyligini tekshirish uchun |
 | `AUTH_SECRET` | Sessiya cookie'sini imzolash (`openssl rand -base64 32`) |
+| `APP_URL` | Baza ishlamasa bot qaytaradigan xavfsiz login havolasining domeni |
 | `SUPABASE_URL` | Supabase loyihasi manzili |
 | `SUPABASE_SERVICE_ROLE_KEY` | `service_role` kaliti — **hech qachon brauzerga tushmasligi kerak** |
 | `ADMIN_API_SECRET` | `/api/admin/items` uchun umumiy sir — admin panel bilan bir xil bo'lishi shart |

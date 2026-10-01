@@ -303,6 +303,7 @@
     "starting": "Link wird vorbereitet…",
     "waiting": "Warten auf die Bestätigung in Telegram",
     "waitingHint": "Tippen Sie im Bot auf „Start“. Der Link läuft in {time} ab.",
+    "manualHint": "Im Bot auf „Start“ tippen und danach den gesendeten Website-Link öffnen. {time}",
     "approved": "Bestätigt",
     "redirecting": "Sie werden weitergeleitet…",
     "openTelegram": "Telegram öffnen",

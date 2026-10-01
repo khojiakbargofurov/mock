@@ -303,6 +303,7 @@
     "starting": "Havola tayyorlanmoqda…",
     "waiting": "Telegram’da tasdiqlashni kutyapmiz",
     "waitingHint": "Botda “Start” tugmasini bosing. Havola {time} dan keyin eskiradi.",
+    "manualHint": "Botda “Start”ni bosing, keyin yuborilgan sayt havolasini oching. {time}",
     "approved": "Tasdiqlandi",
     "redirecting": "Ilovaga o‘tkazilmoqda…",
     "openTelegram": "Telegram’ni ochish",

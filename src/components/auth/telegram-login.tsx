@@ -14,6 +14,7 @@ interface StartResponse {
   link: string | null;
   bot: string;
   expiresIn: number;
+  manual?: boolean;
   message?: string;
 }
 
@@ -27,20 +28,23 @@ interface StartResponse {
 export function TelegramLogin({
   onSuccess,
   labelStart,
+  flow = "login",
 }: {
   onSuccess: (user: SessionUser, isNew: boolean) => void;
   labelStart?: string;
+  flow?: "login" | "register";
 }) {
   const t = useTranslations("auth");
   const [phase, setPhase] = React.useState<Phase>("idle");
   const [link, setLink] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [seconds, setSeconds] = React.useState(0);
+  const [manual, setManual] = React.useState(false);
   const tokenRef = React.useRef<string | null>(null);
 
   // Holatni so'rab turish — token tasdiqlangach sessiya o'rnatiladi
   React.useEffect(() => {
-    if (phase !== "waiting") return;
+    if (phase !== "waiting" || manual) return;
 
     const timer = setInterval(async () => {
       const token = tokenRef.current;
@@ -59,7 +63,7 @@ export function TelegramLogin({
         if (data.status === "approved" && data.user) {
           setPhase("done");
           onSuccess(data.user, data.user.createdAt > Date.now() - 60_000);
-        } else if (data.status === "expired" || data.status === "unknown") {
+        } else if (data.status === "expired") {
           setPhase("expired");
         }
       } catch {
@@ -68,7 +72,7 @@ export function TelegramLogin({
     }, 2000);
 
     return () => clearInterval(timer);
-  }, [phase, onSuccess]);
+  }, [manual, phase, onSuccess]);
 
   // Qolgan vaqt
   React.useEffect(() => {
@@ -92,6 +96,8 @@ export function TelegramLogin({
     try {
       const response = await fetch("/api/auth/telegram/start", {
         method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ flow }),
       });
       const data = (await response.json()) as StartResponse;
 
@@ -104,6 +110,7 @@ export function TelegramLogin({
       tokenRef.current = data.token;
       setLink(data.link);
       setSeconds(data.expiresIn);
+      setManual(Boolean(data.manual));
       setPhase("waiting");
       // Telegram'ni yangi oynada ochamiz — brauzerdagi kutish sahifasi qoladi
       window.open(data.link, "_blank", "noopener,noreferrer");
@@ -131,9 +138,13 @@ export function TelegramLogin({
             <span className="text-muted-2 tnum text-[13.5px]">
               {phase === "done"
                 ? t("redirecting")
-                : t("waitingHint", {
-                    time: `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`,
-                  })}
+                : manual
+                  ? t("manualHint", {
+                      time: `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`,
+                    })
+                  : t("waitingHint", {
+                      time: `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`,
+                    })}
             </span>
           </div>
         </div>

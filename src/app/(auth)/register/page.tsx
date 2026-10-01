@@ -69,6 +69,7 @@ export default function RegisterPage() {
             <TelegramLogin
               onSuccess={onSuccess}
               labelStart={t("registerWithTelegram")}
+              flow="register"
             />
             <ul className="border-line-soft text-muted-3 m-0 flex list-none flex-col gap-0 rounded-[20px] border bg-white/70 p-1 text-[13.5px]">
               {(["benefit1", "benefit2", "benefit3"] as const).map((key) => (
