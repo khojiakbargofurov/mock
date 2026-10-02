@@ -208,6 +208,7 @@ function MobileNav() {
  * profilga kiradigan boshqa yo'l yo'q edi.
  */
 function MobileHeader() {
+  const t = useTranslations("nav");
   const profile = useApp((s) => s.profile);
 
   return (
@@ -215,9 +216,17 @@ function MobileHeader() {
       <Link href="/uebersicht">
         <Logo />
       </Link>
-      <Link href="/profil" aria-label="Profil">
-        <Avatar initials={initials(profile.firstName, profile.lastName)} />
-      </Link>
+      <div className="flex items-center gap-4">
+        <Link
+          href="/statistik"
+          className="text-petrol text-[13.5px] font-semibold"
+        >
+          {t("statistik")}
+        </Link>
+        <Link href="/profil" aria-label="Profil">
+          <Avatar initials={initials(profile.firstName, profile.lastName)} />
+        </Link>
+      </div>
     </header>
   );
 }

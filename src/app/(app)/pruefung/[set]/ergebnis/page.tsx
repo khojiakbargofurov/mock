@@ -8,6 +8,7 @@ import { Badge, Overline } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState, Skeleton } from "@/components/ui/feedback";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { ProgressBar } from "@/components/ui/progress";
 import { ScoreRing } from "@/components/ui/score-ring";
 import { useApp, useHydrated } from "@/lib/store";
@@ -60,6 +61,7 @@ export default function ExamResultPage() {
   const router = useRouter();
   const hydrated = useHydrated();
   const runs = useApp((s) => s.examRuns);
+  const [confirmRetake, setConfirmRetake] = React.useState(false);
 
   const setId = String(params.set ?? "");
   const set = examSet(setId);
@@ -195,10 +197,7 @@ export default function ExamResultPage() {
       <div className="flex flex-wrap gap-3">
         <Button
           variant="accent"
-          onClick={() => {
-            useApp.getState().resetExamRun(setId);
-            router.push(`/pruefung/${setId}`);
-          }}
+          onClick={() => setConfirmRetake(true)}
         >
           {t("retake")}
         </Button>
@@ -206,6 +205,19 @@ export default function ExamResultPage() {
           {t("backToList")}
         </Button>
       </div>
+      <ConfirmDialog
+        open={confirmRetake}
+        title={t("retakeConfirmTitle")}
+        body={t("retakeConfirmBody")}
+        confirmLabel={t("retake")}
+        cancelLabel={t("cancel")}
+        danger
+        onCancel={() => setConfirmRetake(false)}
+        onConfirm={() => {
+          useApp.getState().resetExamRun(setId);
+          router.push(`/pruefung/${setId}`);
+        }}
+      />
     </main>
   );
 }

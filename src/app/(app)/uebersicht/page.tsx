@@ -24,6 +24,8 @@ import {
 import { weakestTopic } from "@/lib/mistakes";
 import { PASS_SCORE } from "@/lib/types";
 import { cn } from "@/lib/cn";
+import { buildStudyPlan, type StudyTask } from "@/lib/study-plan";
+import { useNow } from "@/lib/now";
 
 export default function DashboardPage() {
   const t = useTranslations("dashboard");
@@ -33,7 +35,11 @@ export default function DashboardPage() {
   const profile = useApp((s) => s.profile);
   const attempts = useApp((s) => s.attempts);
   const mistakes = useApp((s) => s.mistakes);
+  const examAttempts = useApp((s) => s.examAttempts);
+  const examRuns = useApp((s) => s.examRuns);
+  const vocab = useApp((s) => s.vocab);
   const statuses = useLevelStatuses();
+  const now = useNow();
 
   if (!hydrated) return <DashboardSkeleton />;
 
@@ -41,6 +47,15 @@ export default function DashboardPage() {
   const skills = skillBreakdown(attempts, questionById);
   const weakest = weakestTopic(mistakes);
   const answered = skills.some((s) => s.answered > 0);
+  const plan = buildStudyPlan({
+    profile,
+    attempts,
+    examAttempts,
+    mistakes,
+    vocab,
+    examRuns,
+    now,
+  });
 
   return (
     <div className="flex flex-1 flex-col xl:flex-row">
@@ -81,6 +96,8 @@ export default function DashboardPage() {
             className="col-span-2 lg:col-span-1"
           />
         </div>
+
+        <StudyPlanCard plan={plan} />
 
         <div className="hidden flex-1 grid-cols-2 gap-[14px] lg:grid">
           {statuses.map((s) => (
@@ -184,6 +201,97 @@ export default function DashboardPage() {
         </div>
       </aside>
     </div>
+  );
+}
+
+function StudyPlanCard({ plan }: { plan: ReturnType<typeof buildStudyPlan> }) {
+  const t = useTranslations("dashboard");
+
+  return (
+    <section className="border-line rounded-4xl flex flex-col gap-4 border bg-white px-5 py-5 lg:px-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex flex-col gap-[4px]">
+          <Overline>{t("planOverline")}</Overline>
+          <h2 className="font-display m-0 text-[21px] font-bold">
+            {plan.daysLeft === null
+              ? t("planTitle")
+              : t("planTitleDays", { days: plan.daysLeft })}
+          </h2>
+        </div>
+        <span className="bg-sand text-muted-3 rounded-pill px-3 py-[7px] text-[12.5px] font-semibold">
+          {t("planProgress", {
+            tests: plan.practiceDone,
+            testTarget: plan.practiceTarget,
+            modules: plan.modulesDone,
+            moduleTarget: plan.moduleTarget,
+          })}
+        </span>
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-3">
+        {plan.tasks.map((task, index) => (
+          <PlanTask key={`${task.kind}-${index}`} task={task} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function PlanTask({ task }: { task: StudyTask }) {
+  const t = useTranslations("dashboard");
+
+  const copy = (() => {
+    switch (task.kind) {
+      case "mistakes":
+        return {
+          title: t("planMistakesTitle"),
+          meta: task.topic
+            ? t("planMistakesTopic", { count: task.count ?? 0, topic: task.topic })
+            : t("planMistakesMeta", { count: task.count ?? 0 }),
+        };
+      case "vocab":
+        return {
+          title: t("planVocabTitle"),
+          meta: t("planVocabMeta", { count: task.count ?? 0, level: task.level ?? "" }),
+        };
+      case "practice":
+        return {
+          title: t("planPracticeTitle", { level: task.level ?? "" }),
+          meta: task.topic
+            ? t("planPracticeTopic", { topic: task.topic })
+            : t("planPracticeMeta"),
+        };
+      case "exam":
+        return {
+          title: t("planExamTitle"),
+          meta: t("planExamMeta", { level: task.level ?? "" }),
+        };
+      case "done":
+        return { title: t("planDoneTitle"), meta: t("planDoneMeta") };
+    }
+  })();
+
+  const content = (
+    <>
+      <span className="text-[15px] font-semibold">{copy.title}</span>
+      <span className="text-muted-2 text-[12.5px] leading-[1.4]">{copy.meta}</span>
+    </>
+  );
+
+  if (!task.href) {
+    return <div className="bg-ok-bg text-ok-fg flex flex-col gap-1 rounded-2xl px-4 py-3">{content}</div>;
+  }
+
+  return (
+    <Link
+      href={task.href}
+      className="bg-paper hover:bg-sand group flex min-w-0 flex-col gap-1 rounded-2xl px-4 py-3 transition-colors"
+    >
+      {content}
+      <span className="text-petrol mt-1 text-[12.5px] font-semibold group-hover:underline">
+        {t("planOpen")} →
+      </span>
+    </Link>
   );
 }
 

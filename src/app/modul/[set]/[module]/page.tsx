@@ -32,6 +32,8 @@ import { cn } from "@/lib/cn";
  */
 function completeModule(setId: string, router: ReturnType<typeof useRouter>) {
   cancelSpeech();
+  const session = useApp.getState().examSession;
+  const fullRun = Boolean(session?.fullRun);
   useApp.getState().finishExamModule();
 
   const run = useApp.getState().examRuns[setId];
@@ -39,11 +41,22 @@ function completeModule(setId: string, router: ReturnType<typeof useRouter>) {
   const total = set ? (formatSpec(set.format)?.modules.length ?? 0) : 0;
   const done = run?.doneModules.length ?? 0;
 
-  router.replace(
-    total > 0 && done === total
-      ? `/pruefung/${setId}/ergebnis`
-      : `/pruefung/${setId}`,
-  );
+  if (total > 0 && done === total) {
+    router.replace(`/pruefung/${setId}/ergebnis`);
+    return;
+  }
+
+  if (fullRun && run && set) {
+    const next = formatSpec(set.format)?.modules.find(
+      (module) => !run.doneModules.includes(module.id),
+    );
+    if (next && useApp.getState().startExamModule(setId, next.id, true)) {
+      router.replace(`/modul/${setId}/${next.id}`);
+      return;
+    }
+  }
+
+  router.replace(`/pruefung/${setId}`);
 }
 
 export default function ExamModulePage() {
@@ -201,6 +214,11 @@ export default function ExamModulePage() {
           <span className="text-muted-2 hidden text-[13.5px] lg:block">
             {spec.label}
           </span>
+          {session.fullRun && (
+            <span className="bg-petrol-bg text-petrol rounded-pill hidden px-3 py-[5px] text-[12px] font-semibold sm:inline">
+              {t("fullExamBadge")}
+            </span>
+          )}
           <span className="text-muted-2 tnum text-[13px] sm:hidden">
             {t("answeredShort", { answered, total: items.length })}
           </span>

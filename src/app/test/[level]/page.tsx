@@ -8,6 +8,7 @@ import { Logo } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Overline } from "@/components/ui/badge";
 import { LoadingLine, Skeleton } from "@/components/ui/feedback";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { SegmentBar } from "@/components/ui/progress";
 import { Toggle } from "@/components/ui/toggle";
 import {
@@ -34,6 +35,7 @@ export default function TestPage() {
   const instantFeedback = useApp((s) => s.profile.settings.instantFeedback);
   const focusMode = useApp((s) => s.profile.settings.focusMode);
   const setSetting = useApp((s) => s.setSetting);
+  const [confirmStop, setConfirmStop] = React.useState(false);
 
   // Bazada savol yo'q bo'lsa sinov boshlanmaydi — bu holat render paytida ma'lum
   const unavailable = validLevel && questionCount(level) === 0;
@@ -112,7 +114,14 @@ export default function TestPage() {
       : t("next");
 
   return (
-    <div className="bg-paper min-h-screen lg:grid lg:grid-cols-[248px_minmax(0,1fr)_300px]">
+    <div
+      className={cn(
+        "bg-paper min-h-screen lg:grid",
+        focusMode
+          ? "lg:grid-cols-[248px_minmax(0,1fr)]"
+          : "lg:grid-cols-[248px_minmax(0,1fr)_300px]",
+      )}
+    >
       {/* ── Chap panel ───────────────────────────────────────────── */}
       <aside className="border-line hidden flex-col gap-[26px] border-r bg-white px-[18px] py-7 lg:flex">
         <div className="px-2">
@@ -168,10 +177,12 @@ export default function TestPage() {
             </span>
             <button
               type="button"
-              onClick={stop}
-              className="text-muted hover:text-danger hidden cursor-pointer text-[14px] font-semibold transition-colors lg:inline"
+              onClick={() => setConfirmStop(true)}
+              aria-label={t("stop")}
+              className="text-muted hover:text-danger flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-[25px] leading-none font-semibold transition-colors hover:bg-white lg:h-auto lg:w-auto lg:rounded-none lg:text-[14px]"
             >
-              {t("stop")}
+              <span aria-hidden className="lg:hidden">×</span>
+              <span className="hidden lg:inline">{t("stop")}</span>
             </button>
           </div>
         </div>
@@ -224,11 +235,11 @@ export default function TestPage() {
             variant="secondary"
             onClick={() => useApp.getState().prev()}
             disabled={session.current === 0}
-            className="hidden lg:inline-flex"
+            className="flex-none"
           >
             {t("back")}
           </Button>
-          <div className="flex w-full gap-3 lg:w-auto">
+          <div className="flex min-w-0 flex-1 gap-3 lg:flex-none">
             <Button
               variant="secondary"
               onClick={() => useApp.getState().toggleFlag()}
@@ -252,7 +263,12 @@ export default function TestPage() {
       </main>
 
       {/* ── O'ng panel: savollar xaritasi ────────────────────────── */}
-      <aside className="border-line hidden flex-col gap-[22px] border-l bg-white px-6 py-[30px] lg:flex">
+      <aside
+        className={cn(
+          "border-line hidden flex-col gap-[22px] border-l bg-white px-6 py-[30px]",
+          !focusMode && "lg:flex",
+        )}
+      >
         <Overline>{t("questions")}</Overline>
         <div className="grid grid-cols-5 gap-2">
           {session.questions.map((q, i) => {
@@ -314,6 +330,16 @@ export default function TestPage() {
           </button>
         </div>
       </aside>
+      <ConfirmDialog
+        open={confirmStop}
+        title={t("stopConfirmTitle")}
+        body={t("stopConfirmBody")}
+        confirmLabel={t("stopConfirmAction")}
+        cancelLabel={t("cancel")}
+        danger
+        onCancel={() => setConfirmStop(false)}
+        onConfirm={stop}
+      />
     </div>
   );
 }

@@ -101,6 +101,8 @@ export interface ExamAttempt {
 export interface ExamSession {
   setId: string;
   moduleId: ModuleId;
+  /** To'liq imtihon rejimida modul tugashi bilan keyingisi avtomatik ochiladi */
+  fullRun?: boolean;
   teilIndex: number;
   remaining: number;
   startedAt: number;
@@ -180,7 +182,7 @@ interface AppState {
   answerVocabCard: (known: boolean) => void;
 
   /* ── Rasmiy formatdagi imtihon ── */
-  startExamModule: (setId: string, moduleId: ModuleId) => boolean;
+  startExamModule: (setId: string, moduleId: ModuleId, fullRun?: boolean) => boolean;
   setExamAnswer: (itemId: string, value: string) => void;
   toggleExamRubric: (itemId: string, criterionId: string) => void;
   /** Avtomatik tekshiruv natijasini bir yo'la qo'yadi (qo'lda belgilanganlar o'rniga) */
@@ -508,7 +510,7 @@ export const useApp = create<AppState>()(
             : s,
         ),
 
-      startExamModule: (setId, moduleId) => {
+      startExamModule: (setId, moduleId, fullRun = false) => {
         const target = examSet(setId);
         if (!target) return false;
         const spec = formatSpec(target.format);
@@ -531,6 +533,7 @@ export const useApp = create<AppState>()(
           examSession: {
             setId,
             moduleId,
+            fullRun,
             teilIndex: 0,
             remaining: ms.timeSec,
             startedAt: Date.now(),

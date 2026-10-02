@@ -70,14 +70,6 @@ export default function ProfilPage() {
             checked={profile.settings.instantFeedback}
             onChange={(v) => setSetting("instantFeedback", v)}
           />
-          <SettingRow
-            divider
-            title={t("reminder")}
-            description={t("reminderDesc")}
-            checked={profile.settings.dailyReminder}
-            onChange={(v) => setSetting("dailyReminder", v)}
-          />
-
           <div className="border-line-soft flex flex-col gap-[10px] border-t pt-[18px]">
             <span className="text-[16px] font-semibold">{t("targetLevel")}</span>
             <div className="flex flex-wrap gap-[9px]">

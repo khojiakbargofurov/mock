@@ -1,11 +1,13 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Badge, Overline } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState, Skeleton } from "@/components/ui/feedback";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useApp, useHydrated } from "@/lib/store";
 import { ProgressBar } from "@/components/ui/progress";
 import { examSet, examSetsByFormat } from "@/lib/exam/registry";
@@ -19,6 +21,7 @@ export default function ExamOverviewPage() {
   const router = useRouter();
   const hydrated = useHydrated();
   const runs = useApp((s) => s.examRuns);
+  const [confirmReset, setConfirmReset] = React.useState(false);
 
   const setId = String(params.set ?? "");
 
@@ -131,6 +134,11 @@ export default function ExamOverviewPage() {
   const run = runs[setId];
   const doneModules = run?.doneModules ?? [];
   const allDone = spec.modules.every((m) => doneModules.includes(m.id));
+  const nextModule = spec.modules.find((m) => !doneModules.includes(m.id));
+  const totalMinutes = spec.modules.reduce(
+    (minutes, module) => minutes + Math.round(module.timeSec / 60),
+    0,
+  );
 
   return (
     <main className="flex flex-1 flex-col gap-[22px] px-6 py-8 lg:px-10 lg:py-[34px]">
@@ -147,6 +155,33 @@ export default function ExamOverviewPage() {
           ← {t("backToList")}
         </Link>
       </div>
+
+      {!allDone && nextModule && (
+        <div className="bg-ink text-on-dark rounded-4xl flex flex-wrap items-center justify-between gap-5 px-6 py-5 lg:px-7">
+          <div className="flex max-w-[62ch] flex-col gap-[5px]">
+            <Overline className="text-on-dark-muted">{t("fullExamOverline")}</Overline>
+            <span className="font-display text-[21px] font-bold">
+              {doneModules.length > 0 ? t("fullExamContinue") : t("fullExamTitle")}
+            </span>
+            <span className="text-on-dark-muted text-[14px] leading-[1.5]">
+              {t("fullExamMeta", {
+                modules: spec.modules.length,
+                minutes: totalMinutes,
+              })}
+            </span>
+          </div>
+          <Button
+            variant="accent"
+            onClick={() => {
+              if (useApp.getState().startExamModule(setId, nextModule.id, true)) {
+                router.push(`/modul/${setId}/${nextModule.id}`);
+              }
+            }}
+          >
+            {doneModules.length > 0 ? t("fullExamResume") : t("fullExamStart")}
+          </Button>
+        </div>
+      )}
 
       <div className="flex flex-col gap-3">
         {spec.modules.map((m) => {
@@ -204,13 +239,26 @@ export default function ExamOverviewPage() {
         {run && (
           <button
             type="button"
-            onClick={() => useApp.getState().resetExamRun(setId)}
+            onClick={() => setConfirmReset(true)}
             className="text-muted-2 hover:text-ink cursor-pointer text-[14px] font-semibold transition-colors"
           >
             {t("reset")}
           </button>
         )}
       </div>
+      <ConfirmDialog
+        open={confirmReset}
+        title={t("resetConfirmTitle")}
+        body={t("resetConfirmBody")}
+        confirmLabel={t("resetConfirmAction")}
+        cancelLabel={t("cancel")}
+        danger
+        onCancel={() => setConfirmReset(false)}
+        onConfirm={() => {
+          useApp.getState().resetExamRun(setId);
+          setConfirmReset(false);
+        }}
+      />
     </main>
   );
 }
