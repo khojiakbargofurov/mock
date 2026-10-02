@@ -11,6 +11,7 @@ import { EmptyState, Skeleton } from "@/components/ui/feedback";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { ProgressBar } from "@/components/ui/progress";
 import { ScoreRing } from "@/components/ui/score-ring";
+import { PrintReportFooter, PrintReportHeader } from "@/components/print-report";
 import { useApp, useHydrated } from "@/lib/store";
 import { examSet } from "@/lib/exam/registry";
 import { formatSpec } from "@/lib/exam/spec";
@@ -104,8 +105,13 @@ export default function ExamResultPage() {
   const result = scoreExam(set, run.answers);
 
   return (
-    <main className="flex flex-1 flex-col gap-[22px] px-6 py-8 lg:px-10 lg:py-[34px]">
-      <div className="flex flex-wrap items-end justify-between gap-5">
+    <main className="print-report flex flex-1 flex-col gap-[22px] px-6 py-8 lg:px-10 lg:py-[34px]">
+      <PrintReportHeader
+        title={result.passed ? t("passedTitle") : t("failedTitle")}
+        meta={`${spec.label} · ${set.title}`}
+        label={t("printLabel")}
+      />
+      <div className="print-hidden flex flex-wrap items-end justify-between gap-5">
         <div className="flex flex-col gap-[6px]">
           <Overline className="tracking-[.18em]">
             {spec.label} · {set.title}
@@ -114,16 +120,21 @@ export default function ExamResultPage() {
             {result.passed ? t("passedTitle") : t("failedTitle")}
           </h1>
         </div>
-        <Link
-          href={`/pruefung/${setId}`}
-          className="text-petrol text-[14px] font-semibold"
-        >
-          ← {t("backToModules")}
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button variant="secondary" onClick={() => window.print()}>
+            {t("print")}
+          </Button>
+          <Link
+            href={`/pruefung/${setId}`}
+            className="text-petrol text-[14px] font-semibold"
+          >
+            ← {t("backToModules")}
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-[14px] xl:grid-cols-[320px_minmax(0,1fr)]">
-        <Card tone="ink" className="flex flex-col items-center gap-5 py-8">
+        <Card tone="ink" className="print-avoid-break flex flex-col items-center gap-5 py-8">
           <ScoreRing
             score={result.percent}
             caption={t("ringCaption", {
@@ -142,7 +153,7 @@ export default function ExamResultPage() {
           </div>
         </Card>
 
-        <Card className="flex flex-col gap-5">
+        <Card className="print-avoid-break flex flex-col gap-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <span className="font-display text-[19px] font-bold">
               {t("byModule")}
@@ -194,7 +205,7 @@ export default function ExamResultPage() {
 
       <Review set={set} values={run.answers.values} />
 
-      <div className="flex flex-wrap gap-3">
+      <div className="print-hidden flex flex-wrap gap-3">
         <Button
           variant="accent"
           onClick={() => setConfirmRetake(true)}
@@ -205,6 +216,7 @@ export default function ExamResultPage() {
           {t("backToList")}
         </Button>
       </div>
+      <PrintReportFooter note={t("printFooter")} />
       <ConfirmDialog
         open={confirmRetake}
         title={t("retakeConfirmTitle")}
@@ -281,7 +293,7 @@ function Review({
             <div
               key={item.id}
               className={cn(
-                "rounded-3xl border px-5 py-4",
+                "print-avoid-break rounded-3xl border px-5 py-4",
                 ok ? "border-ok-bd bg-ok-bg/40" : "border-bad-bd bg-bad-bg/40",
               )}
             >

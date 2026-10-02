@@ -134,7 +134,7 @@ export function Sidebar() {
   const profile = useApp((s) => s.profile);
 
   return (
-    <aside className="border-line hidden w-[248px] flex-none flex-col gap-7 border-r bg-white px-[18px] py-7 lg:flex">
+    <aside className="print-hidden border-line hidden w-[248px] flex-none flex-col gap-7 border-r bg-white px-[18px] py-7 lg:flex">
       <Link href="/uebersicht" className="px-2">
         <Logo />
       </Link>
@@ -167,7 +167,7 @@ function MobileNav() {
   return (
     <nav
       className={cn(
-        "border-line fixed inset-x-0 bottom-0 z-20 flex gap-1 border-t bg-white/95 px-2 pt-2 backdrop-blur lg:hidden",
+        "print-hidden border-line fixed inset-x-0 bottom-0 z-20 flex gap-1 border-t bg-white/95 px-2 pt-2 backdrop-blur lg:hidden",
         // iPhone'dagi pastki chiziq uchun joy
         "pb-[max(8px,env(safe-area-inset-bottom))]",
       )}
@@ -212,7 +212,7 @@ function MobileHeader() {
   const profile = useApp((s) => s.profile);
 
   return (
-    <header className="border-line sticky top-0 z-20 flex items-center justify-between border-b bg-white/95 px-5 py-3 backdrop-blur lg:hidden">
+    <header className="print-hidden border-line sticky top-0 z-20 flex items-center justify-between border-b bg-white/95 px-5 py-3 backdrop-blur lg:hidden">
       <Link href="/uebersicht">
         <Logo />
       </Link>
@@ -271,9 +271,9 @@ function SyncStatus() {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-paper flex min-h-screen">
+    <div className="print-shell bg-paper flex min-h-screen">
       <Sidebar />
-      <div className="flex min-w-0 flex-1 flex-col pb-[76px] lg:pb-0">
+      <div className="print-content flex min-w-0 flex-1 flex-col pb-[76px] lg:pb-0">
         <MobileHeader />
         {children}
       </div>

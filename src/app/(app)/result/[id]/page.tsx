@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/feedback";
 import { SkillRow } from "@/components/ui/progress";
 import { ScoreRing } from "@/components/ui/score-ring";
+import { PrintReportFooter, PrintReportHeader } from "@/components/print-report";
 import { questionById } from "@/lib/questions";
 import { formatDay, formatDuration } from "@/lib/format";
 import {
@@ -77,8 +78,13 @@ export default function ResultPage() {
   const ok = passed(attempt.score);
 
   return (
-    <main className="flex flex-1 flex-col gap-6 px-6 py-8 lg:px-10 lg:py-[34px]">
-      <div className="flex flex-wrap items-end justify-between gap-6">
+    <main className="print-report flex flex-1 flex-col gap-6 px-6 py-8 lg:px-10 lg:py-[34px]">
+      <PrintReportHeader
+        title={verdict}
+        meta={`${attempt.title} · ${formatDay(attempt.finishedAt)}`}
+        label={t("printLabel")}
+      />
+      <div className="print-hidden flex flex-wrap items-end justify-between gap-6">
         <div className="flex flex-col gap-[7px]">
           <Overline className="tracking-[.18em]">
             {t("overline", {
@@ -108,7 +114,7 @@ export default function ResultPage() {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[392px_minmax(0,1fr)]">
-        <Card tone="ink" className="flex flex-col items-center gap-5 p-[30px]">
+        <Card tone="ink" className="print-avoid-break flex flex-col items-center gap-5 p-[30px]">
           <ScoreRing
             score={attempt.score}
             caption={t("ringCaption", {
@@ -130,7 +136,7 @@ export default function ResultPage() {
         </Card>
 
         <div className="flex flex-col gap-4">
-          <Card className="flex flex-col gap-[18px] px-7 py-[26px]">
+          <Card className="print-avoid-break flex flex-col gap-[18px] px-7 py-[26px]">
             <Overline>{t("sections")}</Overline>
             {skills.map((s) => (
               <SkillRow key={s.name} name={s.name} value={s.value} size="lg" />
@@ -138,7 +144,7 @@ export default function ResultPage() {
           </Card>
 
           <div className="grid flex-1 gap-4 sm:grid-cols-2">
-            <Card tone="sand" className="flex flex-col gap-2 p-6">
+            <Card tone="sand" className="print-avoid-break flex flex-col gap-2 p-6">
               <Overline className="text-muted-2 tracking-[.14em]">
                 {t("weakest")}
               </Overline>
@@ -158,7 +164,7 @@ export default function ResultPage() {
               )}
             </Card>
 
-            <Card className="flex flex-col gap-2 p-6">
+            <Card className="print-avoid-break flex flex-col gap-2 p-6">
               <Overline className="text-muted-2 tracking-[.14em]">
                 {t("growth")}
               </Overline>
@@ -182,7 +188,7 @@ export default function ResultPage() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="print-hidden flex flex-wrap gap-3">
         <Button
           variant="accent"
           onClick={() => router.push(`/test/${attempt.level.toLowerCase()}`)}
@@ -196,6 +202,7 @@ export default function ResultPage() {
           {t("home")}
         </Link>
       </div>
+      <PrintReportFooter note={t("printFooter")} />
     </main>
   );
 }

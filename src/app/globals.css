@@ -339,6 +339,70 @@
     0 0 0 12rem rgba(255, 255, 255, 0.009);
 }
 
+/* Natija sahifalarini brauzerning “Save as PDF” oynasida A4 hisobotga aylantiradi. */
+.print-only {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  body {
+    color: #14191f;
+    font-size: 11pt;
+  }
+
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .print-hidden {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-shell,
+  .print-content {
+    display: block !important;
+    min-height: auto !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  .print-report {
+    display: flex !important;
+    width: 100% !important;
+    max-width: none !important;
+    gap: 16px !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  .print-avoid-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .print-report a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+}
+
 /* Harakatni kamaytirish sozlamasini hurmat qilamiz */
 @media (prefers-reduced-motion: reduce) {
   *,
