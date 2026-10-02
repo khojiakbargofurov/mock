@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
 import type {
   ChoiceItem,
@@ -248,52 +249,144 @@ export function SprechenField({
   value?: string;
   onChange: (value: string) => void;
 }) {
-  const [recording, setRecording] = React.useState(false);
+  const t = useTranslations("pruefung");
+  const [phase, setPhase] = React.useState<
+    "idle" | "preparing" | "recording" | "ready"
+  >("idle");
+  const [seconds, setSeconds] = React.useState(0);
   const [audioUrl, setAudioUrl] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const recorder = React.useRef<MediaRecorder | null>(null);
+  const stream = React.useRef<MediaStream | null>(null);
   const chunks = React.useRef<Blob[]>([]);
+  const timer = React.useRef<ReturnType<typeof setInterval> | null>(null);
+  const audioUrlRef = React.useRef<string | null>(null);
+
+  const clearTimer = () => {
+    if (timer.current !== null) {
+      clearInterval(timer.current);
+      timer.current = null;
+    }
+  };
+
+  const releaseStream = () => {
+    stream.current?.getTracks().forEach((track) => track.stop());
+    stream.current = null;
+  };
 
   React.useEffect(() => {
     return () => {
-      recorder.current?.stream.getTracks().forEach((t) => t.stop());
-      if (audioUrl) URL.revokeObjectURL(audioUrl);
+      if (timer.current !== null) clearInterval(timer.current);
+      if (recorder.current?.state === "recording") {
+        recorder.current.onstop = null;
+        recorder.current.stop();
+      }
+      stream.current?.getTracks().forEach((track) => track.stop());
+      if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
     };
-  }, [audioUrl]);
+  }, []);
+
+  const beginRecording = (mediaStream: MediaStream) => {
+    let mr: MediaRecorder;
+    try {
+      mr = new MediaRecorder(mediaStream);
+    } catch {
+      releaseStream();
+      setPhase("idle");
+      setError(t("speakingUnsupported"));
+      return;
+    }
+    recorder.current = mr;
+    chunks.current = [];
+    setSeconds(0);
+    setPhase("recording");
+
+    mr.ondataavailable = (event) => {
+      if (event.data.size > 0) chunks.current.push(event.data);
+    };
+    mr.onstop = () => {
+      clearTimer();
+      const blob = new Blob(chunks.current, {
+        type: mr.mimeType || "audio/webm",
+      });
+      if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
+      const nextUrl = URL.createObjectURL(blob);
+      audioUrlRef.current = nextUrl;
+      setAudioUrl(nextUrl);
+      setPhase("ready");
+      releaseStream();
+    };
+
+    mr.start();
+    let elapsed = 0;
+    timer.current = setInterval(() => {
+      elapsed += 1;
+      setSeconds(elapsed);
+      if (elapsed >= item.speakSec) {
+        clearTimer();
+        if (mr.state === "recording") mr.stop();
+      }
+    }, 1000);
+  };
 
   const start = async () => {
     setError(null);
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
+      setError(t("speakingUnsupported"));
+      return;
+    }
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mr = new MediaRecorder(stream);
-      chunks.current = [];
-      mr.ondataavailable = (e) => chunks.current.push(e.data);
-      mr.onstop = () => {
-        const blob = new Blob(chunks.current, { type: mr.mimeType });
-        // Yozuv faqat shu qurilmada qoladi — hech qayerga yuborilmaydi
-        setAudioUrl((old) => {
-          if (old) URL.revokeObjectURL(old);
-          return URL.createObjectURL(blob);
-        });
-        stream.getTracks().forEach((t) => t.stop());
-      };
-      mr.start();
-      recorder.current = mr;
-      setRecording(true);
-      // Rasmiy vaqt tugaganda yozuv o'zi to'xtaydi
-      window.setTimeout(() => {
-        if (mr.state === "recording") mr.stop();
-        setRecording(false);
-      }, item.speakSec * 1000);
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.current = mediaStream;
+      let remaining = item.prepSec;
+      setSeconds(remaining);
+      setPhase("preparing");
+
+      if (remaining <= 0) {
+        beginRecording(mediaStream);
+        return;
+      }
+
+      timer.current = setInterval(() => {
+        remaining -= 1;
+        setSeconds(remaining);
+        if (remaining <= 0) {
+          clearTimer();
+          beginRecording(mediaStream);
+        }
+      }, 1000);
     } catch {
-      setError("Mikrofonga ruxsat berilmadi — javobni yozib qo‘yishingiz mumkin.");
+      releaseStream();
+      setPhase("idle");
+      setError(t("speakingPermissionError"));
     }
   };
 
   const stop = () => {
+    clearTimer();
     if (recorder.current?.state === "recording") recorder.current.stop();
-    setRecording(false);
   };
+
+  const cancelPreparation = () => {
+    clearTimer();
+    releaseStream();
+    setSeconds(0);
+    setPhase("idle");
+  };
+
+  const removeRecording = () => {
+    if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
+    audioUrlRef.current = null;
+    setAudioUrl(null);
+    setSeconds(0);
+    setPhase("idle");
+  };
+
+  const progress =
+    phase === "preparing"
+      ? ((item.prepSec - seconds) / Math.max(1, item.prepSec)) * 100
+      : (seconds / Math.max(1, item.speakSec)) * 100;
 
   return (
     <div className="flex flex-col gap-4">
@@ -313,44 +406,123 @@ export function SprechenField({
         ))}
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={recording ? stop : start}
-          className={cn(
-            "rounded-lg px-6 py-[14px] text-[15px] font-semibold transition-opacity",
-            recording
-              ? "bg-danger text-paper"
-              : "bg-ink text-paper cursor-pointer hover:opacity-90",
+      <div className="border-line rounded-3xl flex flex-col gap-4 border bg-white px-5 py-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <span className="flex flex-col gap-[3px]">
+            <span className="font-display text-[18px] font-bold">
+              {phase === "preparing"
+                ? t("speakingPreparing")
+                : phase === "recording"
+                  ? t("speakingRecording")
+                  : phase === "ready"
+                    ? t("speakingReady")
+                    : t("speakingTitle")}
+            </span>
+            <span className="text-muted-2 tnum text-[13.5px]">
+              {t("speakingTiming", {
+                prep: item.prepSec,
+                speak: item.speakSec,
+              })}
+            </span>
+          </span>
+
+          {phase === "idle" && (
+            <button
+              type="button"
+              onClick={start}
+              className="bg-ink text-paper cursor-pointer rounded-lg px-6 py-[13px] text-[15px] font-semibold transition-opacity hover:opacity-90"
+            >
+              ● {t("speakingStart")}
+            </button>
           )}
-        >
-          {recording ? "■ Yozuvni to‘xtatish" : "● Javobni yozib olish"}
-        </button>
-        <span className="text-muted-2 tnum text-[13.5px]">
-          Tayyorgarlik {item.prepSec} s · gapirish {item.speakSec} s
-        </span>
+          {phase === "preparing" && (
+            <button
+              type="button"
+              onClick={cancelPreparation}
+              className="border-line-btn text-muted-3 hover:bg-sand cursor-pointer rounded-lg border px-5 py-[12px] text-[14px] font-semibold"
+            >
+              {t("speakingCancel")}
+            </button>
+          )}
+          {phase === "recording" && (
+            <button
+              type="button"
+              onClick={stop}
+              className="bg-danger text-paper cursor-pointer rounded-lg px-6 py-[13px] text-[15px] font-semibold"
+            >
+              ■ {t("speakingStop")}
+            </button>
+          )}
+        </div>
+
+        {(phase === "preparing" || phase === "recording") && (
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-muted-3 text-[14px]">
+                {phase === "preparing"
+                  ? t("speakingStartsIn")
+                  : t("speakingElapsed")}
+              </span>
+              <span className="font-display tnum text-[24px] font-bold">
+                {phase === "preparing"
+                  ? `${seconds}s`
+                  : `${seconds}s / ${item.speakSec}s`}
+              </span>
+            </div>
+            <div className="bg-sand rounded-pill h-2 overflow-hidden">
+              <div
+                className={cn(
+                  "rounded-pill h-full transition-[width] duration-300",
+                  phase === "recording" ? "bg-danger" : "bg-accent",
+                )}
+                style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {error && <span className="text-bad-fg text-[14px]">{error}</span>}
 
       {audioUrl && (
-        <audio
-          controls
-          src={audioUrl}
-          className="w-full"
-          aria-label="Sizning yozuvingiz"
-        />
+        <div className="bg-sand flex flex-col gap-3 rounded-3xl px-5 py-4">
+          <audio
+            controls
+            src={audioUrl}
+            className="w-full"
+            aria-label={t("speakingAudioLabel")}
+          />
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                removeRecording();
+                void start();
+              }}
+              className="text-petrol cursor-pointer text-[14px] font-semibold"
+            >
+              {t("speakingRerecord")}
+            </button>
+            <button
+              type="button"
+              onClick={removeRecording}
+              className="text-muted-2 hover:text-danger cursor-pointer text-[14px] font-semibold"
+            >
+              {t("speakingDelete")}
+            </button>
+          </div>
+        </div>
       )}
 
       <label className="flex flex-col gap-2">
         <span className="text-muted-3 text-[14.5px]">
-          Ixtiyoriy: aytmoqchi bo‘lgan gaplaringizni yozib qo‘ying — natijada
-          namuna bilan solishtirasiz.
+          {t("speakingNotes")}
         </span>
         <textarea
           value={value ?? ""}
           onChange={(e) => onChange(e.target.value)}
           rows={5}
+          placeholder={t("speakingNotesPlaceholder")}
           className="border-line focus:border-ink w-full resize-y rounded-3xl border bg-white px-[22px] py-4 text-[16px] leading-[1.6] outline-none transition-colors"
         />
       </label>
